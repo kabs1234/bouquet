@@ -3,6 +3,11 @@ import "./vendor";
 import { ImageSlider } from "./utils/image-slider";
 import { iosVhFix } from "./utils/ios-vh-fix";
 import { modals, initModals } from "./modals/init-modals";
+import InfoPresenter from "./presenters/info-presenter";
+import FilterPresenter from "./presenters/filter-presenter";
+import BasketButtonPresenter from "./presenters/basket-button-presenter";
+import ProductsModel from "./models/products-model";
+import CatalogPresenter from "./presenters/catalog-presenter";
 
 // Ваши импорты...
 
@@ -33,3 +38,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Ваш код...
 });
+
+const main = document.querySelector('main');
+const headerWrapper = document.querySelector('.header__wrapper');
+const basketButton = document.querySelector('.header__container');
+
+const productsModel = new ProductsModel();
+const infoPresenter = new InfoPresenter(main);
+const filterPresenter = new FilterPresenter(main);
+const catalogPresenter = new CatalogPresenter(main);
+const basketButtonPresenter = new BasketButtonPresenter(headerWrapper, productsModel);
+
+basketButton.remove();
+basketButtonPresenter.initalize();
+infoPresenter.initalize();
+filterPresenter.initalize();
+catalogPresenter.initalize();
