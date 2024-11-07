@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view.js";
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createBasketButtonTemplate = ({sum, productCount}) => (`
   <div class="header__container">
@@ -21,7 +21,7 @@ const createBasketButtonTemplate = ({sum, productCount}) => (`
       </div>
     </div>
   </div>
-`)
+`);
 
 export default class BasketButtonView extends AbstractView {
   #basketData = null;

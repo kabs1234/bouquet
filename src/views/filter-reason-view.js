@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view.js";
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilterReasonTemplate = () => (`
   <section class="filter-reason">
@@ -35,7 +35,7 @@ const createFilterReasonTemplate = () => (`
       </form>
     </div>
   </section>
-`)
+`);
 
 export default class FilterReasonView extends AbstractView {
   get template() {

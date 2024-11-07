@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view.js";
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createBasketHero = () => (`
   <section class="hero hero--popup">
@@ -23,7 +23,7 @@ const createBasketHero = () => (`
       </div>
     </div>
   </section>
-`)
+`);
 
 const createBasketContainer = () => (`
   <ul class="popup-deferred__catalog">
@@ -133,7 +133,7 @@ const createBasketContainer = () => (`
       </div>
     </li>
   </ul>
-`)
+`);
 
 const createBasketSum = () => (`
   <div class="popup-deferred__sum">
@@ -147,7 +147,7 @@ const createBasketSum = () => (`
       </div>
     </div>
   </div>
-`)
+`);
 
 const createBasketTemplate = () => (`
   <section class="popup-deferred" style="display:block;">

@@ -1,6 +1,6 @@
-import { remove, render, replace } from "../framework/render";
-import FilterColorView from "../views/filter-color-view";
-import FilterReasonView from "../views/filter-reason-view";
+import { remove, render, replace } from '../framework/render';
+import FilterColorView from '../views/filter-color-view';
+import FilterReasonView from '../views/filter-reason-view';
 
 export default class FilterPresenter {
   #container = null;
@@ -23,7 +23,7 @@ export default class FilterPresenter {
 
     replace(previousFilterReasonView, this.#filterReasonView);
     remove(previousFilterReasonView);
-  }
+  };
 
   #renderFilterColor = () => {
     const previousFilterColorView = this.#filterColorView;
@@ -37,10 +37,10 @@ export default class FilterPresenter {
 
     replace(previousFilterColorView, this.#filterColorView);
     remove(previousFilterColorView);
-  }
+  };
 
   initalize = () => {
     this.#renderFilterReason();
     this.#renderFilterColor();
-  }
+  };
 }

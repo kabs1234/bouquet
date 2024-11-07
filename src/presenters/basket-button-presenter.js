@@ -1,5 +1,5 @@
-import { remove, render, replace } from "../framework/render";
-import BasketButtonView from "../views/basket-button-view.js";
+import { remove, render, replace } from '../framework/render';
+import BasketButtonView from '../views/basket-button-view.js';
 
 export default class BasketButtonPresenter {
   #container = null;
@@ -23,9 +23,9 @@ export default class BasketButtonPresenter {
 
     replace(previousBasketButtonView, this.#basketButtonView);
     remove(previousBasketButtonView);
-  }
+  };
 
   initalize = () => {
     this.#renderBasketButton();
-  }
+  };
 }

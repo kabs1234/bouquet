@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view.js";
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createCatalogHeaderTemplate = () => (`
   <div class="catalogue__header">

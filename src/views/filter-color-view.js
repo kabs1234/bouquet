@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view.js";
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilterColorTemplate = () => (`
   <section class="filter-color">
@@ -53,7 +53,7 @@ const createFilterColorTemplate = () => (`
       </form>
     </div>
   </section>
-`)
+`);
 
 export default class FilterColorView extends AbstractView {
   get template() {
