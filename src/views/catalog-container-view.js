@@ -1,9 +1,13 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createCatalogContainerTemplate = () => '<ul class="catalogue__list"></ul>';
+const createCatalogTemplate = () => (`
+  <div class="catalogue" data-items="catalogue">
+    <div class="container"></div>
+  </div>
+`);
 
-export default class CatalogContainerView extends AbstractView {
+export default class CatalogView extends AbstractView {
   get template() {
-    return createCatalogContainerTemplate();
+    return createCatalogTemplate();
   }
 }

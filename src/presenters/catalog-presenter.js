@@ -1,17 +1,20 @@
-import { remove, render } from '../framework/render';
-import CatalogButtonsView from '../views/catalog-buttons-view';
-import CatalogContainerView from '../views/catalog-container-view';
-import CatalogHeaderView from '../views/catalog-header-view';
-import CatalogItemView from '../views/catalog-item-view';
+import { render } from '../framework/render.js';
+import CatalogButtonsView from '../views/catalog-buttons-view.js';
+import CatalogProductsContainerView from '../views/catalog-products-container-view.js';
+import CatalogHeaderView from '../views/catalog-header-view.js';
+import CatalogProductView from '../views/catalog-product-view.js';
+import CatalogView from '../views/catalog-container-view.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
 export default class CatalogPresenter {
   #container = null;
   #productsModel = null;
+  #catalogView = new CatalogView();
+  #catalogContainer = this.#catalogView.element.firstElementChild;
   #catalogHeaderView = new CatalogHeaderView();
   #catalogButtonsView = new CatalogButtonsView();
-  #catalogContainerView = new CatalogContainerView();
+  #catalogProductsContainerView = new CatalogProductsContainerView();
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
   #productsCopy = null;
@@ -23,49 +26,59 @@ export default class CatalogPresenter {
   }
 
   #renderCatalogButtons = () => {
-    render(this.#catalogButtonsView, this.#container);
+    render(this.#catalogButtonsView, this.#catalogContainer);
   };
 
   #renderCatalogHeader = () => {
-    render(this.#catalogHeaderView, this.#container);
+    render(this.#catalogHeaderView, this.#catalogContainer);
   };
 
-  #renderCatalogItems = () => {
+  #renderCatalogProducts = () => {
     this.#productsCopy.slice(this.#showedProductsAmount, this.#productsToRender).forEach((product) => {
-      this.#renderCatalogItem(product);
+      this.#renderCatalogProduct(product);
     });
 
     if (this.#productsCopy.length < this.#productsToRender) {
-      remove(this.#catalogButtonsView);
-      this.#catalogButtonsView = null;
+      this.#catalogButtonsView.removeShowMoreButton();
     }
   };
 
-  #renderCatalogItem = (product) => {
-    const catalogItem = new CatalogItemView(product);
+  #swipeToCatalogTop = () => {
+    this.#catalogView.element.scrollIntoView();
+  };
 
-    render(catalogItem, this.#catalogContainerView.element);
+  #renderCatalogProduct = (product) => {
+    const catalogProduct = new CatalogProductView(product);
+
+    render(catalogProduct, this.#catalogProductsContainerView.element);
   };
 
   #renderMoreProducts = () => {
     this.#showedProductsAmount += PRODUCTS_RENDERING_AMOUNT_STEP;
     this.#productsToRender += PRODUCTS_RENDERING_AMOUNT_STEP;
 
-    this.#renderCatalogItems();
+    this.#renderCatalogProducts();
   };
 
   #setHandlers = () => {
     this.#catalogButtonsView.setShowMoreButtonClickHandler(this.#renderMoreProducts);
+    this.#catalogButtonsView.setToTopButtonClickHandler(this.#swipeToCatalogTop);
   };
 
-  #renderCatalogList = () => {
-    render(this.#catalogContainerView, this.#container);
+  #renderCatalogProductsContainer = () => {
+    render(this.#catalogProductsContainerView, this.#catalogContainer);
+  };
+
+  #renderCatalog = () => {
+    render(this.#catalogView, this.#container);
   };
 
   initalize = () => {
+    this.#renderCatalog();
+
     this.#renderCatalogHeader();
-    this.#renderCatalogList();
-    this.#renderCatalogItems();
+    this.#renderCatalogProductsContainer();
+    this.#renderCatalogProducts();
 
     if (this.#productsCopy.length > this.#productsToRender) {
       this.#renderCatalogButtons();

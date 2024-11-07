@@ -26,6 +26,16 @@ export default class CatalogButtonsView extends AbstractView {
     this._callback.showMoreButtonClick();
   };
 
+  setToTopButtonClickHandler = (callback) => {
+    this._callback.toTopButtonClick = callback;
+    this.element.querySelector('.catalogue__to-top-btn').addEventListener('click', this.#toTopButtonClickHandler);
+  };
+
+  #toTopButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toTopButtonClick();
+  };
+
   removeShowMoreButton = () => {
     this.element.querySelector('.catalogue__show-more-btn').remove();
   };

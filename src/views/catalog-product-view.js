@@ -33,7 +33,7 @@ const getProductType = (productType) => {
   }
 };
 
-const createCatalogItemTemplate = (productData) => {
+const createCatalogProductTemplate = (productData) => {
   const convertedProductPriceToString = productData.price.toString();
   const formattedProductPriceString = `${convertedProductPriceToString[0]}&nbsp;${convertedProductPriceToString.slice(1)}`;
 
@@ -56,7 +56,7 @@ const createCatalogItemTemplate = (productData) => {
   `);
 };
 
-export default class CatalogItemView extends AbstractView {
+export default class CatalogProductView extends AbstractView {
   #productData = null;
 
   constructor(productData) {
@@ -65,6 +65,6 @@ export default class CatalogItemView extends AbstractView {
   }
 
   get template() {
-    return createCatalogItemTemplate(this.#productData);
+    return createCatalogProductTemplate(this.#productData);
   }
 }
