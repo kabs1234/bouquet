@@ -3,11 +3,12 @@ import './vendor';
 import { ImageSlider } from './utils/image-slider';
 import { iosVhFix } from './utils/ios-vh-fix';
 import { modals, initModals } from './modals/init-modals';
-import InfoPresenter from './presenters/info-presenter';
-import FilterPresenter from './presenters/filter-presenter';
-import BasketButtonPresenter from './presenters/basket-button-presenter';
-import ProductsModel from './models/products-model';
-import CatalogPresenter from './presenters/catalog-presenter';
+import InfoPresenter from './presenters/info-presenter.js';
+import BasketButtonPresenter from './presenters/basket-button-presenter.js';
+import ProductsModel from './models/products-model.js';
+import CatalogPresenter from './presenters/catalog-presenter.js';
+import FiltersModel from './models/filters-model.js';
+import FiltersPresenter from './presenters/filters-presenter.js';
 
 // Ваши импорты...
 
@@ -44,9 +45,10 @@ const headerWrapper = document.querySelector('.header__wrapper');
 const basketButton = document.querySelector('.header__container');
 
 const productsModel = new ProductsModel();
+const filtersModel = new FiltersModel();
 const infoPresenter = new InfoPresenter(main);
-const filterPresenter = new FilterPresenter(main);
-const catalogPresenter = new CatalogPresenter(main, productsModel);
+const filterPresenter = new FiltersPresenter(main, filtersModel);
+const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel);
 const basketButtonPresenter = new BasketButtonPresenter(headerWrapper, productsModel);
 
 basketButton.remove();
