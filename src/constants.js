@@ -20,3 +20,16 @@ export const FilterType = {
   Reason: 'Reason',
   Color: 'Color',
 };
+
+export const SortByPrice = {
+  Increase: 'increase',
+  Decrease: 'decrease',
+};
+
+export const ProductType = {
+  BirthdayBoy: 'Имениннику',
+  ForLove: 'Любимой',
+  Bridge: 'Невесте',
+  Colleagues: 'Коллеге',
+  MotherDay: 'Маме',
+};

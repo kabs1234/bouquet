@@ -1,3 +1,4 @@
+import { ProductType } from '../constants.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createFavoriteButton = () => (`
@@ -9,14 +10,6 @@ const createFavoriteButton = () => (`
     </svg>
   </button>
 `);
-
-const ProductType = {
-  BirthdayBoy: 'Имениннику',
-  ForLove: 'Любимой',
-  Bridge: 'Невесте',
-  Colleagues: 'Коллеге',
-  MotherDay: 'Маме',
-};
 
 const getProductType = (productType) => {
   switch (productType) {
@@ -33,9 +26,16 @@ const getProductType = (productType) => {
   }
 };
 
+function beautifyPrice(price) {
+  return price.toLocaleString('en-US').replace(/,/g, ' ');
+}
+
 const createCatalogProductTemplate = (productData) => {
-  const convertedProductPriceToString = productData.price.toString();
-  const formattedProductPriceString = `${convertedProductPriceToString[0]}&nbsp;${convertedProductPriceToString.slice(1)}`;
+  let formattedProductPriceString = productData.price;
+
+  if (productData.price >= 1000) {
+    formattedProductPriceString = beautifyPrice(productData.price);
+  }
 
   return (`
     <li class="catalogue__item">

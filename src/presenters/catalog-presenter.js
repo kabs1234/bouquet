@@ -1,10 +1,10 @@
-import { remove, render } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 import CatalogButtonsView from '../views/catalog-buttons-view.js';
 import CatalogProductsContainerView from '../views/catalog-products-container-view.js';
-import CatalogHeaderView from '../views/catalog-header-view.js';
 import CatalogProductView from '../views/catalog-product-view.js';
 import CatalogView from '../views/catalog-container-view.js';
-import { FilterColor, FilterReason } from '../constants.js';
+import { FilterColor, FilterReason, SortByPrice } from '../constants.js';
+import CatalogSortingsView from '../views/catalog-sortings-view.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
@@ -14,7 +14,8 @@ export default class CatalogPresenter {
   #filtersModel = null;
   #catalogView = new CatalogView();
   #catalogContainer = this.#catalogView.element.firstElementChild;
-  #catalogHeaderView = new CatalogHeaderView();
+  #activeSorting = SortByPrice.Increase;
+  #catalogSortingsView = null;
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
   #showedProductsAmount = 0;
@@ -25,11 +26,13 @@ export default class CatalogPresenter {
     this.#productsModel = productsModel;
     this.#filtersModel = filtersModel;
 
-    this.#filtersModel.addObserver(this.#handleFilterChange);
+    this.#filtersModel.addObserver(this.#handleViewChange);
   }
 
   get products() {
-    const productsCopy = [...this.#productsModel.products];
+    let productsCopy = [...this.#productsModel.products];
+
+    productsCopy = this.#sortProductsByPrice(productsCopy);
 
     if (this.#filtersModel.filterReason === FilterReason.All && this.#filtersModel.filterColors[0] === FilterColor.All) {
       return productsCopy;
@@ -47,21 +50,53 @@ export default class CatalogPresenter {
   }
 
   #renderCatalogButtons = () => {
+    const previouscatalogButtonsView = this.#catalogButtonsView;
+
     this.#catalogButtonsView = new CatalogButtonsView();
 
-    render(this.#catalogButtonsView, this.#catalogContainer);
+    if (previouscatalogButtonsView === null) {
+      render(this.#catalogButtonsView, this.#catalogContainer);
+      return;
+    }
+
+    replace(this.#catalogButtonsView, previouscatalogButtonsView);
+    remove(previouscatalogButtonsView);
   };
 
-  #renderCatalogHeader = () => {
-    render(this.#catalogHeaderView, this.#catalogContainer);
+  #renderCatalogSortings = () => {
+    const previousCatalogSortingsView = this.#catalogSortingsView;
+
+    this.#catalogSortingsView = new CatalogSortingsView(this.#activeSorting);
+    this.#catalogSortingsView.setIncreaseButtonClickHandler(this.#setSortingByPriceToIncreasing);
+    this.#catalogSortingsView.setDecreaseButtonClickHandler(this.#setSortingByPriceToDecreasing);
+
+    if (previousCatalogSortingsView === null) {
+      render(this.#catalogSortingsView, this.#catalogContainer);
+      return;
+    }
+
+    replace(this.#catalogSortingsView, previousCatalogSortingsView);
+    remove(previousCatalogSortingsView);
   };
 
-  #handleFilterChange = () => {
+  #setSortingByPriceToIncreasing = () => {
+    this.#activeSorting = SortByPrice.Increase;
+    this.#handleViewChange();
+  };
+
+  #setSortingByPriceToDecreasing = () => {
+    this.#activeSorting = SortByPrice.Decrease;
+    this.#handleViewChange();
+  };
+
+  #handleViewChange = () => {
     this.#showedProductsAmount = 0;
     this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
 
     this.#clearProductsContainer();
     this.#clearCatalogButtons();
+
+    this.#renderCatalogSortings();
     this.#renderCatalogProductsContainer();
     this.#renderCatalogProducts();
 
@@ -113,10 +148,30 @@ export default class CatalogPresenter {
     this.#catalogButtonsView.setToTopButtonClickHandler(this.#swipeToCatalogTop);
   };
 
+  #sortProductsByIncreasingPrice = (products) => products.sort((a, b) => a.price - b.price);
+
+  #sortProductsByDecreasingPrice = (products) => products.sort((a, b) => b.price - a.price);
+
+  #sortProductsByPrice = (products) => {
+    if (this.#activeSorting === SortByPrice.Increase) {
+      return this.#sortProductsByIncreasingPrice(products);
+    } else if (this.#activeSorting === SortByPrice.Decrease) {
+      return this.#sortProductsByDecreasingPrice(products);
+    }
+  };
+
   #renderCatalogProductsContainer = () => {
+    const previousCatalogProductsContainerView = this.#catalogProductsContainerView;
+
     this.#catalogProductsContainerView = new CatalogProductsContainerView();
 
-    render(this.#catalogProductsContainerView, this.#catalogContainer);
+    if (previousCatalogProductsContainerView === null) {
+      render(this.#catalogProductsContainerView, this.#catalogContainer);
+      return;
+    }
+
+    replace(this.#catalogProductsContainerView, previousCatalogProductsContainerView);
+    remove(previousCatalogProductsContainerView);
   };
 
   #renderCatalog = () => {
@@ -126,7 +181,7 @@ export default class CatalogPresenter {
   initalize = () => {
     this.#renderCatalog();
 
-    this.#renderCatalogHeader();
+    this.#renderCatalogSortings();
     this.#renderCatalogProductsContainer();
     this.#renderCatalogProducts();
 
