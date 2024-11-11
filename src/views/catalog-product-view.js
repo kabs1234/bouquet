@@ -31,10 +31,15 @@ function beautifyPrice(price) {
 }
 
 const createCatalogProductTemplate = (productData) => {
-  let formattedProductPriceString = productData.price;
+  let formattedProductPrice = productData.price;
+  let formattedProductDescription = productData.description;
 
   if (productData.price >= 1000) {
-    formattedProductPriceString = beautifyPrice(productData.price);
+    formattedProductPrice = beautifyPrice(productData.price);
+  }
+
+  if (formattedProductDescription.length >= 140) {
+    formattedProductDescription = `${formattedProductDescription.slice(0, 140)}...`;
   }
 
   return (`
@@ -48,9 +53,9 @@ const createCatalogProductTemplate = (productData) => {
         </div>
         <div class="item-card__desc-wrap">
           <h3 class="title title--h4 item-card__title">${productData.title}</h3>
-          <div class="item-card__price-wrap"><b class="item-card__formatted-price">${formattedProductPriceString}</b><span class="item-card__currency">р</span></div>
+          <div class="item-card__price-wrap"><b class="item-card__formatted-price">${formattedProductPrice}</b><span class="item-card__currency">р</span></div>
         </div>
-        <p class="text text--size-20 item-card__desc">${productData.description}</p>
+        <p class="text text--size-20 item-card__desc">${formattedProductDescription}</p>
       </div>
     </li>
   `);

@@ -5,6 +5,7 @@ import CatalogProductView from '../views/catalog-product-view.js';
 import CatalogView from '../views/catalog-container-view.js';
 import { FilterColor, FilterReason, SortByPrice } from '../constants.js';
 import CatalogSortingsView from '../views/catalog-sortings-view.js';
+import CatalogProductsEmptyMessageView from '../views/catalog-products-empty-message-view.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
@@ -12,12 +13,17 @@ export default class CatalogPresenter {
   #container = null;
   #productsModel = null;
   #filtersModel = null;
+
   #catalogView = new CatalogView();
-  #catalogContainer = this.#catalogView.element.firstElementChild;
-  #activeSorting = SortByPrice.Increase;
+
+  #catalogProductsEmptyMessageView = null;
   #catalogSortingsView = null;
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
+
+  #catalogContainer = this.#catalogView.element.firstElementChild;
+  #activeSorting = SortByPrice.Increase;
+
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
 
@@ -50,17 +56,17 @@ export default class CatalogPresenter {
   }
 
   #renderCatalogButtons = () => {
-    const previouscatalogButtonsView = this.#catalogButtonsView;
+    const previousСatalogButtonsView = this.#catalogButtonsView;
 
     this.#catalogButtonsView = new CatalogButtonsView();
 
-    if (previouscatalogButtonsView === null) {
+    if (previousСatalogButtonsView === null) {
       render(this.#catalogButtonsView, this.#catalogContainer);
       return;
     }
 
-    replace(this.#catalogButtonsView, previouscatalogButtonsView);
-    remove(previouscatalogButtonsView);
+    replace(this.#catalogButtonsView, previousСatalogButtonsView);
+    remove(previousСatalogButtonsView);
   };
 
   #renderCatalogSortings = () => {
@@ -93,10 +99,20 @@ export default class CatalogPresenter {
     this.#showedProductsAmount = 0;
     this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
 
-    this.#clearProductsContainer();
-    this.#clearCatalogButtons();
+    this.#clearProductsContainerView();
+    this.#clearCatalogButtonsView();
+    this.#clearСatalogProductsEmptyMessageView();
 
     this.#renderCatalogSortings();
+
+    if (this.products.length === 0) {
+      this.#renderCatalogProductsEmptyMessage();
+      this.#renderCatalogButtons();
+      this.#setHandlers();
+      this.#catalogButtonsView.removeShowMoreButton();
+      return;
+    }
+
     this.#renderCatalogProductsContainer();
     this.#renderCatalogProducts();
 
@@ -106,14 +122,33 @@ export default class CatalogPresenter {
     }
   };
 
-  #clearProductsContainer = () => {
+  #clearСatalogProductsEmptyMessageView = () => {
+    remove(this.#catalogProductsEmptyMessageView);
+    this.#catalogProductsEmptyMessageView = null;
+  };
+
+  #clearProductsContainerView = () => {
     remove(this.#catalogProductsContainerView);
     this.#catalogProductsContainerView = null;
   };
 
-  #clearCatalogButtons = () => {
+  #clearCatalogButtonsView = () => {
     remove(this.#catalogButtonsView);
     this.#catalogButtonsView = null;
+  };
+
+  #renderCatalogProductsEmptyMessage = () => {
+    const previousCatalogProductsEmptyMessageView = this.#catalogProductsEmptyMessageView;
+
+    this.#catalogProductsEmptyMessageView = new CatalogProductsEmptyMessageView();
+
+    if (previousCatalogProductsEmptyMessageView === null) {
+      render(this.#catalogProductsEmptyMessageView, this.#catalogContainer);
+      return;
+    }
+
+    replace(this.#catalogProductsEmptyMessageView, previousCatalogProductsEmptyMessageView);
+    remove(previousCatalogProductsEmptyMessageView);
   };
 
   #renderCatalogProducts = () => {
