@@ -10,4 +10,34 @@ export default class ProductsModel extends Observable {
   get basket() {
     return {...BASKET};
   }
+
+  addProductToBasket = (product) => {
+    this.basket.products[product] = 1;
+    console.log(this.basket);
+
+    this._notify();
+  };
+
+  increaseProductQuantityByOne = (product) => {
+    this.basket.products[product] += 1;
+
+    console.log(this.basket);
+
+    this._notify();
+  };
+
+  decreaseProductQuantityByOne = (product) => {
+    this.basket.products[product] -= 1;
+
+    console.log(this.basket);
+
+    this._notify();
+  };
+
+  deleteProductFromBasket = (product) => {
+    delete this.basket.products[product];
+    console.log(this.basket, product);
+
+    this._notify();
+  };
 }

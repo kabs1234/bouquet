@@ -1,4 +1,4 @@
-import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
+import AbstractView from '../../framework/view/abstract-view';
 import { beautifyPrice } from '../../utils/general';
 
 const createBasketProductTemplate = (productData, productQuantity) => (`
@@ -43,7 +43,7 @@ const createBasketProductTemplate = (productData, productQuantity) => (`
   </li>
 `);
 
-export default class BasketProductView extends AbstractStatefulView {
+export default class BasketProductView extends AbstractView {
   #productData = null;
   #productQuantity = null;
 
@@ -63,7 +63,7 @@ export default class BasketProductView extends AbstractStatefulView {
 
   #deleteProductButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteProductButtonClick();
+    this._callback.deleteProductButtonClick(evt.currentTarget.dataset.productId);
   };
 
   setIncreaseQuantityButtonClickHandler = (callback) => {
@@ -92,39 +92,6 @@ export default class BasketProductView extends AbstractStatefulView {
   #decreaseQuantityButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.decreaseQuantityButtonClick(evt.currentTarget.dataset.productId);
-  };
-
-  #increaseQuantityHandler = (productId) => {
-    console.log(productId);
-
-    this.updateElement({
-      ...this._state,
-      products: {
-        ...this._state.products,
-        [productId]: this._state.products[productId] + 1,
-      }
-    });
-
-    console.log(this._state);
-  };
-
-  #decreaseQuantityHandler = (productId) => {
-    console.log(productId);
-
-    this.updateElement({
-      ...this._state,
-      products: {
-        ...this._state.products,
-        [productId]: this._state.products[productId] - 1,
-      }
-    });
-
-    console.log(this._state);
-  };
-
-  #setHandlers = () => {
-    this.setIncreaseQuantityButtonClickHandler(this.#increaseQuantityHandler);
-    this.setDecreaseQuantityButtonClickHandler(this.#decreaseQuantityHandler);
   };
 
   get template() {

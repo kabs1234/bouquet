@@ -1,6 +1,5 @@
 export const BASKET = {
   'products': {
-    'f4b62099-293f-4c3d-a702-94eec4a2808c': 1,
     '0c4ca061-9407-4b0f-af0f-459a66accd72': 2,
     '2ab7aa2d-7a78-4c57-84f3-d704fea129a3': 1,
     '36e8b244-2930-4374-8d03-931b41faca8c': 2,

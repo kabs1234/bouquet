@@ -43,7 +43,7 @@ const createCatalogProductTemplate = (productData, basketData) => {
 
   return (`
     <li class="catalogue__item">
-      <div class="item-card">
+      <div class="item-card ${isProductInBasket ? 'is-favorite' : ''}">
         <button class="item-card__btn" type="button" data-open-modal="product-card" aria-label="посмотреть товар"></button>
         <p class="item-card__label">${getProductType(productData.type)}</p>
         <div class="item-card__img-wrap">

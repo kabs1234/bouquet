@@ -15,7 +15,7 @@ export default class BasketCatalogDirectorView extends AbstractView {
 
   setDirectToCatalogButtonClickHandler = (callback) => {
     this._callback.directToCatalogButtonClick = callback;
-    this.element.querySelector('.popup-deferred__btn').addEventListener('click', this.#directToCatalogButtonClickHandler);
+    this.element.addEventListener('click', this.#directToCatalogButtonClickHandler);
   };
 
   #directToCatalogButtonClickHandler = (evt) => {

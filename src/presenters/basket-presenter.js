@@ -20,7 +20,7 @@ export default class BasketPresenter {
   #basketHeroView = new BasketHeroView();
   #basketContentContainerView = new BasketContentContainerView();
   #basketCatalogDirectorView = new BasketCatalogDirectorView();
-  #basketProductsContainerView = new BasketProductsContainerView();
+  #basketProductsContainerView = null;
   #basketClearProductsButtonView = new BasketClearProductsButtonView();
   #basketSumView = null;
 
@@ -30,6 +30,8 @@ export default class BasketPresenter {
     this.#swipeToCatalogFunction = swipeToCatalogFunction;
     this.#hideMainFunction = hideMainFunction;
     this.#showMainFunction = showMainFunction;
+
+    productsModel.addObserver(this.#handleBasketChange);
   }
 
   #renderBasket = () => {
@@ -41,6 +43,8 @@ export default class BasketPresenter {
   };
 
   #renderBasketHero = () => {
+    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#closeBasket);
+
     render(this.#basketHeroView, this.#basketWrapper.element);
   };
 
@@ -49,11 +53,23 @@ export default class BasketPresenter {
   };
 
   #renderCatalogDirectorView = () => {
+    this.#basketCatalogDirectorView.setDirectToCatalogButtonClickHandler(this.#directToCatalog);
+
     render(this.#basketCatalogDirectorView, this.#basketContentContainerView.element);
   };
 
   #renderBasketProductsContainerView = () => {
-    render(this.#basketProductsContainerView, this.#basketContentContainerView.element);
+    const previousBasketProductsContainerView = this.#basketProductsContainerView;
+
+    this.#basketProductsContainerView = new BasketProductsContainerView();
+
+    if (previousBasketProductsContainerView === null) {
+      render(this.#basketProductsContainerView, this.#basketContentContainerView.element);
+      return;
+    }
+
+    replace(this.#basketProductsContainerView, previousBasketProductsContainerView);
+    remove(previousBasketProductsContainerView);
   };
 
   #renderBasketProducts = () => {
@@ -65,18 +81,37 @@ export default class BasketPresenter {
       const basketProductQuantity = basketProductsQuantity[index];
       const basketProduct = new BasketProductView(element, basketProductQuantity);
 
+      basketProduct.setDeleteProductButtonClickHandler(this.#productsModel.deleteProductFromBasket);
+      basketProduct.setIncreaseQuantityButtonClickHandler(this.#productsModel.increaseProductQuantityByOne);
+      basketProduct.setDecreaseQuantityButtonClickHandler(this.#productsModel.decreaseProductQuantityByOne);
+
       render(basketProduct, this.#basketProductsContainerView.element);
     });
   };
 
+  #handleBasketChange = () => {
+    this.#renderBasketProductsContainerView();
+    this.#renderBasketProducts();
+    this.#renderBasketSum();
+  };
+
   #renderBasketClearProductsButton = () => {
+    this.#basketClearProductsButtonView.setBasketClearButtonClickHandler(this.#clearProductsBasket);
+
     render(this.#basketClearProductsButtonView, this.#basketContentContainerView.element);
   };
 
   #renderBasketSum = () => {
+    const previousBasketSumView = this.#basketSumView;
     this.#basketSumView = new BasketSumView(this.#productsModel.basket);
 
-    render(this.#basketSumView, this.#basketContentContainerView.element);
+    if (previousBasketSumView === null) {
+      render(this.#basketSumView, this.#basketContentContainerView.element);
+      return;
+    }
+
+    replace(this.#basketSumView, previousBasketSumView);
+    remove(previousBasketSumView);
   };
 
   initalize = () => {
@@ -96,12 +131,11 @@ export default class BasketPresenter {
 
   #directToCatalog = () => {
     this.#closeBasket();
-    this.#showMainFunction();
     this.#swipeToCatalogFunction();
   };
 
   #clearProductsBasket = () => {
-    this.#basketView.clearBasketProductsContainer();
+    this.#basketProductsContainerView.clearBasketProductsContainer();
   };
 
   #closeBasket = () => {
