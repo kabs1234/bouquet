@@ -1,5 +1,6 @@
-import { ProductType } from '../constants.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import { ProductType } from '../../constants.js';
+import AbstractView from '../../framework/view/abstract-view.js';
+import { beautifyPrice } from '../../utils/general.js';
 
 const createFavoriteButton = () => (`
   <button class="button-heart item-card__to-fav-btn" type="button" aria-label="добавить в избранное">
@@ -26,11 +27,9 @@ const getProductType = (productType) => {
   }
 };
 
-function beautifyPrice(price) {
-  return price.toLocaleString('en-US').replace(/,/g, ' ');
-}
+const createCatalogProductTemplate = (productData, basketData) => {
+  const isProductInBasket = Object.keys(basketData.products).includes(productData.id);
 
-const createCatalogProductTemplate = (productData) => {
   let formattedProductPrice = productData.price;
   let formattedProductDescription = productData.description;
 
@@ -63,13 +62,25 @@ const createCatalogProductTemplate = (productData) => {
 
 export default class CatalogProductView extends AbstractView {
   #productData = null;
+  #basketData = null;
 
-  constructor(productData) {
+  constructor(productData, basketData) {
     super();
     this.#productData = productData;
+    this.#basketData = basketData;
   }
 
+  setItemCardClickHandler = (callback) => {
+    this._callback.itemCardClick = callback;
+    this.element.querySelector('.item-card__btn').addEventListener('click', this.#itemCardClickHandler);
+  };
+
+  #itemCardClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.itemCardClick();
+  };
+
   get template() {
-    return createCatalogProductTemplate(this.#productData);
+    return createCatalogProductTemplate(this.#productData, this.#basketData);
   }
 }

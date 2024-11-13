@@ -1,6 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 
-const createBasketButtonTemplate = ({sum, productCount}) => (`
+const createBasketHeaderTemplate = ({sum, productCount}) => (`
   <div class="header__container">
     <div class="header-count">
       <button class="header-count__btn" type="button">
@@ -23,7 +23,7 @@ const createBasketButtonTemplate = ({sum, productCount}) => (`
   </div>
 `);
 
-export default class BasketButtonView extends AbstractView {
+export default class BasketHeaderView extends AbstractView {
   #basketData = null;
 
   constructor(basketData) {
@@ -31,7 +31,17 @@ export default class BasketButtonView extends AbstractView {
     this.#basketData = basketData;
   }
 
+  setBasketButtonClickHandler = (callback) => {
+    this._callback.basketButtonClick = callback;
+    this.element.querySelector('.header-count__btn').addEventListener('click', this.#basketButtonClickHandler);
+  };
+
+  #basketButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.basketButtonClick();
+  };
+
   get template() {
-    return createBasketButtonTemplate(this.#basketData);
+    return createBasketHeaderTemplate(this.#basketData);
   }
 }

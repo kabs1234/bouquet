@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 
 const createBasketHeroTemplate = () => (`
   <section class="hero hero--popup">
@@ -29,4 +29,14 @@ export default class BasketHeroView extends AbstractView {
   get template() {
     return createBasketHeroTemplate();
   }
+
+  setBasketCloseButtonClickHandler = (callback) => {
+    this._callback.basketCloseButtonClick = callback;
+    this.element.querySelector('.hero__popupclose').addEventListener('click', this.#basketCloseButtonClickHandler);
+  };
+
+  #basketCloseButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.basketCloseButtonClick();
+  };
 }

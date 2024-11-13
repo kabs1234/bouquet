@@ -1,5 +1,5 @@
-import { SortByPrice } from '../constants.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import { SortByPrice } from '../../constants.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 
 const createCatalogSortingsTemplate = (activeSorting) => (`
   <div class="catalogue__header">
