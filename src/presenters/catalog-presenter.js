@@ -1,6 +1,5 @@
 import { remove, render, replace } from '../framework/render.js';
 import { FilterColor, FilterReason, SortByPrice } from '../constants.js';
-import { modals } from '../modals/init-modals.js';
 import CatalogView from '../views/catalog-views/catalog-view.js';
 import CatalogContainerView from '../views/catalog-views/catalog-container-view.js';
 import CatalogButtonsView from '../views/catalog-views/catalog-buttons-view.js';
@@ -15,6 +14,7 @@ export default class CatalogPresenter {
   #container = null;
   #productsModel = null;
   #filtersModel = null;
+  #renderExpandedProductFunction = null;
 
   #catalogView = new CatalogView();
 
@@ -23,6 +23,7 @@ export default class CatalogPresenter {
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
 
+
   #catalogContainerView = new CatalogContainerView();
   #activeSorting = SortByPrice.Increase;
 
@@ -30,10 +31,11 @@ export default class CatalogPresenter {
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
   #productsView = new Map();
 
-  constructor(container, productsModel, filtersModel) {
+  constructor(container, productsModel, filtersModel, renderExpandedProductFunction) {
     this.#container = container;
     this.#productsModel = productsModel;
     this.#filtersModel = filtersModel;
+    this.#renderExpandedProductFunction = renderExpandedProductFunction;
 
     this.#filtersModel.addObserver(this.#handleViewChange);
   }
@@ -169,7 +171,7 @@ export default class CatalogPresenter {
     const catalogProductView = new CatalogProductView(product, this.#productsModel.basket);
     this.#productsView.set(product.id, catalogProductView);
 
-    catalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
+    catalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
     catalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
 
     render(catalogProductView, this.#catalogProductsContainerView.element);
@@ -188,7 +190,7 @@ export default class CatalogPresenter {
     const newCatalogProduct = this.products.find((product) => product.id === productId);
     const newCatalogProductView = new CatalogProductView(newCatalogProduct, this.#productsModel.basket);
 
-    newCatalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
+    newCatalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
     newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
 
     replace(newCatalogProductView, this.#productsView.get(productId));

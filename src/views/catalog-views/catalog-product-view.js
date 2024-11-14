@@ -44,7 +44,7 @@ const createCatalogProductTemplate = (productData, basketData) => {
   return (`
     <li class="catalogue__item">
       <div class="item-card ${isFavorite ? 'is-favorite' : ''}">
-        <button class="item-card__btn" type="button" data-open-modal="product-card" aria-label="посмотреть товар"></button>
+        <button class="item-card__btn" type="button" data-open-modal="${productData.id}" aria-label="посмотреть товар"></button>
         <p class="item-card__label">${getProductType(productData.type)}</p>
         <div class="item-card__img-wrap">
           ${createFavoriteButton(productData.id)}
@@ -77,7 +77,7 @@ export default class CatalogProductView extends AbstractView {
 
   #productClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.productClick();
+    this._callback.productClick(this.#productData);
   };
 
   setFavoriteButtonClickHandler = (callback) => {

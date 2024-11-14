@@ -1,4 +1,4 @@
-import { Modals } from "./modals";
+import { Modals } from './modals';
 
 let modals;
 
@@ -9,9 +9,13 @@ let modals;
 //   modals.open(name);
 // };
 
-// closeCallback() {
-//   openModalInCloseCallback('modal-5');
-// },
+const closeCallback = () => {
+  const expandedProductDescription = document.querySelector('.product-description');
+  const imageSlider = document.querySelector('.image-slider');
+
+  expandedProductDescription.remove();
+  imageSlider.remove();
+};
 
 const settings = {
   default: {
@@ -22,16 +26,16 @@ const settings = {
     focusBack: true,
     eventTimeout: 400,
     openCallback: false,
-    closeCallback: false,
+    closeCallback,
   },
 };
 
 const initModals = () => {
-  const modalElements = document.querySelectorAll(".modal");
+  const modalElements = document.querySelectorAll('.modal');
   if (modalElements.length) {
     modalElements.forEach((el) => {
       setTimeout(() => {
-        el.classList.remove("modal--preload");
+        el.classList.remove('modal--preload');
       }, 100);
     });
   }
