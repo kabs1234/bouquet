@@ -58,12 +58,11 @@ const filtersModel = new FiltersModel();
 const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
 const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel);
-const basketPresenter = new BasketPresenter(pageContentWrapper, productsModel, catalogPresenter.swipeToCatalogTop, hideMain, showMain);
-const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, basketPresenter.initalize);
+const basketPresenter = new BasketPresenter(pageContentWrapper, productsModel, catalogPresenter.swipeToCatalogTop, showMain);
+const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, basketPresenter.initalize, hideMain);
 
 basketHeader.remove();
 basketHeaderPresenter.initalize();
 infoPresenter.initalize();
 filterPresenter.initalize();
 catalogPresenter.initalize();
-basketPresenter.initalize();

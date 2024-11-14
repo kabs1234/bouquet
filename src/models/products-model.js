@@ -40,4 +40,12 @@ export default class ProductsModel extends Observable {
 
     this._notify();
   };
+
+  clearBasket = () => {
+    const productsId = Object.keys(this.basket.products);
+
+    productsId.forEach((productId) => {
+      delete this.basket.products[productId];
+    });
+  };
 }

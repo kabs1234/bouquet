@@ -6,9 +6,4 @@ export default class BasketProductsContainerView extends AbstractView {
   get template() {
     return createBasketProductsContainerTemplate();
   }
-
-  clearBasketProductsContainer = () => {
-    const basketProductsContainer = document.querySelector('.popup-deferred__catalog');
-    basketProductsContainer.remove();
-  };
 }

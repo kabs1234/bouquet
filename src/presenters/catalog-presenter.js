@@ -28,7 +28,7 @@ export default class CatalogPresenter {
 
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
-  #productsViews = new Map();
+  #productsView = new Map();
 
   constructor(container, productsModel, filtersModel) {
     this.#container = container;
@@ -167,7 +167,7 @@ export default class CatalogPresenter {
 
   #renderCatalogProduct = (product) => {
     const catalogProductView = new CatalogProductView(product, this.#productsModel.basket);
-    this.#productsViews.set(product.id, catalogProductView);
+    this.#productsView.set(product.id, catalogProductView);
 
     catalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
     catalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
@@ -191,10 +191,10 @@ export default class CatalogPresenter {
     newCatalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
     newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
 
-    replace(newCatalogProductView, this.#productsViews.get(productId));
+    replace(newCatalogProductView, this.#productsView.get(productId));
 
-    this.#productsViews.delete(productId);
-    this.#productsViews.set(productId, newCatalogProductView);
+    this.#productsView.delete(productId);
+    this.#productsView.set(productId, newCatalogProductView);
   };
 
   #renderMoreProducts = () => {
