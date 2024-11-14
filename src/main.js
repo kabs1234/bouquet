@@ -44,25 +44,36 @@ const main = document.querySelector('main');
 const headerWrapper = document.querySelector('.header__wrapper');
 const basketHeader = document.querySelector('.header__container');
 
-const hideMain = () => {
-  main.style = 'display: none;';
-};
-
-const showMain = () => {
-  main.style = '';
-};
-
 const productsModel = new ProductsModel();
 const filtersModel = new FiltersModel();
 
+const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel);
 const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
-const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel);
-const basketPresenter = new BasketPresenter(pageContentWrapper, productsModel, catalogPresenter.swipeToCatalogTop, showMain);
-const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, basketPresenter.initalize, hideMain);
+const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, renderBasket, hideMain);
 
 basketHeader.remove();
 basketHeaderPresenter.initalize();
 infoPresenter.initalize();
 filterPresenter.initalize();
 catalogPresenter.initalize();
+
+function hideMain() {
+  main.style = 'display: none;';
+}
+
+function showMain() {
+  main.style = '';
+}
+
+function renderBasket() {
+  const isBasketRendered = Boolean(document.querySelector('.popup-deferred'));
+
+  if (isBasketRendered) {
+    return;
+  }
+
+  const basketPresenter = new BasketPresenter(pageContentWrapper, productsModel, catalogPresenter.swipeToCatalogTop, showMain);
+
+  basketPresenter.initalize();
+}
