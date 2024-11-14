@@ -13,7 +13,7 @@ export default class ProductsModel extends Observable {
 
   addProductToBasket = (product) => {
     this.basket.products[product] = 1;
-    console.log(this.basket);
+    console.log(this.basket, product);
 
     this._notify();
   };

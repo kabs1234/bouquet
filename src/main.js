@@ -67,6 +67,3 @@ infoPresenter.initalize();
 filterPresenter.initalize();
 catalogPresenter.initalize();
 basketPresenter.initalize();
-
-
-main.style = 'display: none;';

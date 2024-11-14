@@ -28,6 +28,7 @@ export default class CatalogPresenter {
 
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
+  #productsViews = new Map();
 
   constructor(container, productsModel, filtersModel) {
     this.#container = container;
@@ -165,10 +166,35 @@ export default class CatalogPresenter {
   };
 
   #renderCatalogProduct = (product) => {
-    const catalogProduct = new CatalogProductView(product, this.#productsModel.basket);
-    catalogProduct.setItemCardClickHandler(() => modals.open('popup-data-attr'));
+    const catalogProductView = new CatalogProductView(product, this.#productsModel.basket);
+    this.#productsViews.set(product.id, catalogProductView);
 
-    render(catalogProduct, this.#catalogProductsContainerView.element);
+    catalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
+    catalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+
+    render(catalogProductView, this.#catalogProductsContainerView.element);
+  };
+
+  #changeFavoriteButtonState = (productId) => {
+    const productsId = Object.keys(this.#productsModel.basket.products);
+    const isFavorite = productsId.includes(productId);
+
+    if (isFavorite) {
+      this.#productsModel.deleteProductFromBasket(productId);
+    } else {
+      this.#productsModel.addProductToBasket(productId);
+    }
+
+    const newCatalogProduct = this.products.find((product) => product.id === productId);
+    const newCatalogProductView = new CatalogProductView(newCatalogProduct, this.#productsModel.basket);
+
+    newCatalogProductView.setProductClickHandler(() => modals.open('popup-data-attr'));
+    newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+
+    replace(newCatalogProductView, this.#productsViews.get(productId));
+
+    this.#productsViews.delete(productId);
+    this.#productsViews.set(productId, newCatalogProductView);
   };
 
   #renderMoreProducts = () => {
