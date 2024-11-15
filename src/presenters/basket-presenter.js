@@ -12,8 +12,6 @@ import BasketSumView from '../views/basket-views/basket-sum-view';
 export default class BasketPresenter {
   #productsModel = null;
   #container = null;
-  #swipeToCatalogFunction = null;
-  #showMainFunction = null;
 
   #basketView = new BasketView();
   #basketWrapper = new BasketWrapperView();
@@ -25,12 +23,12 @@ export default class BasketPresenter {
   #basketProductsContainerView = null;
   #basketSumView = null;
   #renderPosition = null;
+  #redirectToCatalogFunction = null;
 
-  constructor(container, productsModel, swipeToCatalogFunction, showMainFunction, renderPosition = RenderPosition.BEFOREEND) {
+  constructor(container, productsModel, redirectToCatalogFunction, renderPosition = RenderPosition.BEFOREEND) {
     this.#container = container;
     this.#productsModel = productsModel;
-    this.#swipeToCatalogFunction = swipeToCatalogFunction;
-    this.#showMainFunction = showMainFunction;
+    this.#redirectToCatalogFunction = redirectToCatalogFunction;
     this.#renderPosition = renderPosition;
 
     productsModel.addObserver(this.#handleBasketChange);
@@ -49,7 +47,7 @@ export default class BasketPresenter {
   };
 
   #renderBasketHero = () => {
-    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#closeBasket);
+    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#removeBasket);
 
     render(this.#basketHeroView, this.#basketWrapper.element);
   };
@@ -135,8 +133,8 @@ export default class BasketPresenter {
   };
 
   #directToCatalog = () => {
-    this.#closeBasket();
-    this.#swipeToCatalogFunction();
+    this.#removeBasket();
+    this.#redirectToCatalogFunction();
   };
 
   #clearProductsBasket = () => {
@@ -152,9 +150,8 @@ export default class BasketPresenter {
     this.#productsModel.clearBasket();
   };
 
-  #closeBasket = () => {
+  #removeBasket = () => {
     remove(this.#basketView);
     this.#basketView = null;
-    this.#showMainFunction();
   };
 }

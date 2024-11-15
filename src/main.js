@@ -12,6 +12,7 @@ import ExpandedProductContentPresenter from './presenters/expanded-product-conte
 import { ImageSlider } from './utils/image-slider.js';
 import { initModals, modals } from './modals/init-modals.js';
 import { RenderPosition } from './framework/render.js';
+import { FilterColor, FilterReason, FilterType } from './constants.js';
 
 // Ваши импорты...
 
@@ -58,6 +59,14 @@ function showMain() {
   main.style = '';
 }
 
+function redirectToCatalog() {
+  showMain();
+  catalogPresenter.swipeToCatalogTop();
+  catalogPresenter.resetActiveSorting();
+  filtersModel.setfilterReason(FilterType.Reason, FilterReason.All);
+  filtersModel.setFilterColor(FilterType.Color, FilterColor.All);
+}
+
 function renderBasket() {
   const isBasketRendered = Boolean(document.querySelector('.popup-deferred'));
 
@@ -65,7 +74,7 @@ function renderBasket() {
     return;
   }
 
-  const basketPresenter = new BasketPresenter(footer, productsModel, catalogPresenter.swipeToCatalogTop, showMain, RenderPosition.BEFOREBEGIN);
+  const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, RenderPosition.BEFOREBEGIN);
 
   basketPresenter.initalize();
 }

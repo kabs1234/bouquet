@@ -23,7 +23,6 @@ export default class CatalogPresenter {
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
 
-
   #catalogContainerView = new CatalogContainerView();
   #activeSorting = SortByPrice.Increase;
 
@@ -248,6 +247,11 @@ export default class CatalogPresenter {
 
   #renderCatalogContainer = () => {
     render(this.#catalogContainerView, this.#catalogView.element);
+  };
+
+  resetActiveSorting = () => {
+    this.#activeSorting = SortByPrice.Increase;
+    console.log(this.#activeSorting);
   };
 
   initalize = () => {
