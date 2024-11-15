@@ -1,4 +1,4 @@
-import { remove, render, replace } from '../framework/render';
+import { remove, render, RenderPosition, replace } from '../framework/render';
 import BasketWrapperView from '../views/basket-views/basket-wrapper-view';
 import BasketHeroView from '../views/basket-views/basket-hero-view';
 import BasketView from '../views/basket-views/basket-view';
@@ -14,20 +14,24 @@ export default class BasketPresenter {
   #container = null;
   #swipeToCatalogFunction = null;
   #showMainFunction = null;
+
   #basketView = new BasketView();
   #basketWrapper = new BasketWrapperView();
   #basketHeroView = new BasketHeroView();
   #basketContentContainerView = new BasketContentContainerView();
   #basketCatalogDirectorView = new BasketCatalogDirectorView();
-  #basketProductsContainerView = null;
   #basketClearProductsButtonView = new BasketClearProductsButtonView();
-  #basketSumView = null;
 
-  constructor(container, productsModel, swipeToCatalogFunction, showMainFunction) {
+  #basketProductsContainerView = null;
+  #basketSumView = null;
+  #renderPosition = null;
+
+  constructor(container, productsModel, swipeToCatalogFunction, showMainFunction, renderPosition = RenderPosition.BEFOREEND) {
     this.#container = container;
     this.#productsModel = productsModel;
     this.#swipeToCatalogFunction = swipeToCatalogFunction;
     this.#showMainFunction = showMainFunction;
+    this.#renderPosition = renderPosition;
 
     productsModel.addObserver(this.#handleBasketChange);
   }
@@ -37,7 +41,7 @@ export default class BasketPresenter {
   }
 
   #renderBasket = () => {
-    render(this.#basketView, this.#container);
+    render(this.#basketView, this.#container, this.#renderPosition);
   };
 
   #renderBasketWrapper = () => {

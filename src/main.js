@@ -11,6 +11,7 @@ import BasketPresenter from './presenters/basket-presenter.js';
 import ExpandedProductContentPresenter from './presenters/expanded-product-content-presenter.js';
 import { ImageSlider } from './utils/image-slider.js';
 import { initModals, modals } from './modals/init-modals.js';
+import { RenderPosition } from './framework/render.js';
 
 // Ваши импорты...
 
@@ -29,11 +30,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // Ваш код...
 });
 
-
-const pageContentWrapper = document.querySelector('.wrapper');
-const main = document.querySelector('main');
 const headerWrapper = document.querySelector('.header__wrapper');
 const basketHeader = document.querySelector('.header__container');
+const main = document.querySelector('main');
+const footer = document.querySelector('footer');
 const modalContentContainer = document.querySelector('.modal-product');
 
 const productsModel = new ProductsModel();
@@ -65,7 +65,7 @@ function renderBasket() {
     return;
   }
 
-  const basketPresenter = new BasketPresenter(pageContentWrapper, productsModel, catalogPresenter.swipeToCatalogTop, showMain);
+  const basketPresenter = new BasketPresenter(footer, productsModel, catalogPresenter.swipeToCatalogTop, showMain, RenderPosition.BEFOREBEGIN);
 
   basketPresenter.initalize();
 }
