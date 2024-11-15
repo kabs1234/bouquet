@@ -13,6 +13,8 @@ export default class BasketHeaderPresenter {
     this.#productsModel = productsModel;
     this.#basketRenderingFunction = basketRenderingFunction;
     this.#hideMainFunction = hideMainFunction;
+
+    this.#productsModel.addObserver(this.#renderBasketHeader);
   }
 
   #renderBasketHeader = () => {
@@ -26,7 +28,7 @@ export default class BasketHeaderPresenter {
       return;
     }
 
-    replace(previousBasketHeaderView, this.#basketHeaderView);
+    replace(this.#basketHeaderView, previousBasketHeaderView);
     remove(previousBasketHeaderView);
   };
 

@@ -71,7 +71,7 @@ function renderBasket() {
 }
 
 function renderExpandedProduct(productData) {
-  const expandedProductPresenter = new ExpandedProductContentPresenter(productData, modalContentContainer);
+  const expandedProductPresenter = new ExpandedProductContentPresenter(productData, productsModel, modalContentContainer);
 
   const imageSlider = new ImageSlider('.image-slider');
 

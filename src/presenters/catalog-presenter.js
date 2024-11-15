@@ -38,6 +38,7 @@ export default class CatalogPresenter {
     this.#renderExpandedProductFunction = renderExpandedProductFunction;
 
     this.#filtersModel.addObserver(this.#handleViewChange);
+    this.#productsModel.addObserver(this.#handleViewChange);
   }
 
   get products() {

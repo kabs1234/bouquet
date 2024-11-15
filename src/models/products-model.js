@@ -47,5 +47,7 @@ export default class ProductsModel extends Observable {
     productsId.forEach((productId) => {
       delete this.basket.products[productId];
     });
+
+    this._notify();
   };
 }

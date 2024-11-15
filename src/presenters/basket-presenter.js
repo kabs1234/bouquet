@@ -32,6 +32,10 @@ export default class BasketPresenter {
     productsModel.addObserver(this.#handleBasketChange);
   }
 
+  get basketProducts() {
+    return this.#productsModel.basket.products;
+  }
+
   #renderBasket = () => {
     render(this.#basketView, this.#container);
   };
@@ -71,12 +75,11 @@ export default class BasketPresenter {
   };
 
   #renderBasketProducts = () => {
-    const basketProductsId = Object.keys(this.#productsModel.basket.products);
-    const basketProductsQuantity = Object.values(this.#productsModel.basket.products);
+    const basketProductsId = Object.keys(this.basketProducts);
     const basketProductsData = this.#productsModel.products.filter((product) => basketProductsId.includes(product.id));
 
-    basketProductsData.map((element, index) => {
-      const basketProductQuantity = basketProductsQuantity[index];
+    basketProductsData.map((element) => {
+      const basketProductQuantity = this.basketProducts[element.id];
       const basketProduct = new BasketProductView(element, basketProductQuantity);
 
       basketProduct.setDeleteProductButtonClickHandler(this.#productsModel.deleteProductFromBasket);
