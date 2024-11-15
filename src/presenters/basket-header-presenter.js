@@ -18,7 +18,13 @@ export default class BasketHeaderPresenter {
   }
 
   #renderBasketHeader = () => {
+    if (this.#productsModel.basket === null) {
+      return;
+    }
+
     const previousBasketHeaderView = this.#basketHeaderView;
+
+    console.log(this.#productsModel.basket);
 
     this.#basketHeaderView = new BasketHeaderView(this.#productsModel.basket);
     this.#basketHeaderView.setBasketButtonClickHandler(this.#renderBasket);

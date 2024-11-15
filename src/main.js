@@ -12,24 +12,14 @@ import ExpandedProductContentPresenter from './presenters/expanded-product-conte
 import { ImageSlider } from './utils/image-slider.js';
 import { initModals, modals } from './modals/init-modals.js';
 import { RenderPosition } from './framework/render.js';
-import { FilterColor, FilterReason, FilterType } from './constants.js';
+import { AUTHORIZATION_TOKEN, END_POINT, FilterColor, FilterReason, FilterType } from './constants.js';
+import ProductsServiceApi from './service/products-service-api.js';
 
-// Ваши импорты...
-
-// Код для работы попапов, не удаляйте его
 window.addEventListener('DOMContentLoaded', () => {
   iosVhFix();
-  // Пример кода для открытия попапа
-
-  // Код отработает, если разметка попапа уже отрисована в index.html
-
-  // Если вы хотите рисовать разметку попапа под каждое "открытие",
-  // то не забудьте перенесети в код addEventListener инициализацию слайдера
-
-  // ------------
-
-  // Ваш код...
 });
+
+const productsServiceApi = new ProductsServiceApi(END_POINT, AUTHORIZATION_TOKEN);
 
 const headerWrapper = document.querySelector('.header__wrapper');
 const basketHeader = document.querySelector('.header__container');
@@ -37,7 +27,7 @@ const main = document.querySelector('main');
 const footer = document.querySelector('footer');
 const modalContentContainer = document.querySelector('.modal-product');
 
-const productsModel = new ProductsModel();
+const productsModel = new ProductsModel(productsServiceApi);
 const filtersModel = new FiltersModel();
 
 const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel, renderExpandedProduct);
@@ -45,6 +35,7 @@ const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
 const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, renderBasket, hideMain);
 
+productsModel.initalize();
 basketHeader.remove();
 basketHeaderPresenter.initalize();
 infoPresenter.initalize();

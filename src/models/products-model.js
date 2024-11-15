@@ -3,12 +3,29 @@ import { BASKET } from '../mocks/basket.js';
 import { PRODUCTS } from '../mocks/products.js';
 
 export default class ProductsModel extends Observable {
+  #productService = null;
+  #productsList = [];
+  #basket = null;
+
+  constructor(productService) {
+    super();
+    this.#productService = productService;
+  }
+
+  // get products() {
+  //   return [...PRODUCTS];
+  // }
+
+  // get basket() {
+  //   return {...BASKET};
+  // }
+
   get products() {
-    return [...PRODUCTS];
+    return this.#productsList;
   }
 
   get basket() {
-    return {...BASKET};
+    return this.#basket;
   }
 
   addProductToBasket = (product) => {
@@ -49,5 +66,20 @@ export default class ProductsModel extends Observable {
     });
 
     this._notify();
+  };
+
+  initalize = async () => {
+    try {
+      const productsListRequest = await this.#productService.getProductsList();
+      const basketRequest = await this.#productService.getBasket();
+
+      this.#productsList = [...productsListRequest];
+      this.#basket = {...basketRequest};
+
+      this._notify();
+
+    } catch (err) {
+      throw new Error('error');
+    }
   };
 }

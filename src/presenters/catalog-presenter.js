@@ -30,6 +30,8 @@ export default class CatalogPresenter {
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
   #productsView = new Map();
 
+  #isLoading = true;
+
   constructor(container, productsModel, filtersModel, renderExpandedProductFunction) {
     this.#container = container;
     this.#productsModel = productsModel;
@@ -251,12 +253,16 @@ export default class CatalogPresenter {
 
   resetActiveSorting = () => {
     this.#activeSorting = SortByPrice.Increase;
-    console.log(this.#activeSorting);
   };
 
   initalize = () => {
     this.#renderCatalog();
     this.#renderCatalogContainer();
+
+    if (this.#isLoading) {
+      this.#isLoading = false;
+      return;
+    }
 
     this.#renderCatalogSortings();
     this.#renderCatalogProductsContainer();
