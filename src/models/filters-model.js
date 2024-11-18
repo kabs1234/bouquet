@@ -13,19 +13,19 @@ export default class FiltersModel extends Observable {
     return this.#filterColors;
   }
 
-  setfilterReason = (filterType, newFilterReason) => {
+  setfilterReason = (updateType, newFilterReason) => {
     this.#filterReason = newFilterReason;
-    this._notify(filterType);
+    this._notify(updateType);
   };
 
-  setFilterColor = (filterType, newFilterColor) => {
+  setFilterColor = (updateType, newFilterColor) => {
     if (newFilterColor === FilterColor.All) {
       this.#filterColors = [FilterColor.All];
-      this._notify(filterType);
+      this._notify(updateType);
     } else {
       if (this.filterColors.length === 1 && this.filterColors[0] === FilterColor.All) {
         this.#filterColors = [newFilterColor];
-        this._notify(filterType);
+        this._notify(updateType);
         return;
       }
 
@@ -42,12 +42,12 @@ export default class FiltersModel extends Observable {
           ...this.#filterColors.slice(deletingFilterColor + 1)
         ];
 
-        this._notify(filterType);
+        this._notify(updateType);
         return;
       }
 
       this.#filterColors.push(newFilterColor);
-      this._notify(filterType);
+      this._notify(updateType);
     }
 
   };

@@ -42,3 +42,9 @@ export const Method = {
   Put: 'PUT',
   Delete: 'DELETE',
 };
+
+export const UpdateType = {
+  Initalize: 'Initalize',
+  Patch: 'Patch',
+  Major: 'Major',
+};

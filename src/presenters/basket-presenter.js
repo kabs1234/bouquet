@@ -85,8 +85,8 @@ export default class BasketPresenter {
       const basketProduct = new BasketProductView(element, basketProductQuantity);
 
       basketProduct.setDeleteProductButtonClickHandler(this.#productsModel.deleteProductFromBasket);
-      basketProduct.setIncreaseQuantityButtonClickHandler(this.#productsModel.increaseProductQuantityByOne);
-      basketProduct.setDecreaseQuantityButtonClickHandler(this.#productsModel.decreaseProductQuantityByOne);
+      basketProduct.setIncreaseQuantityButtonClickHandler(this.#productsModel.addProductToBasket);
+      basketProduct.setDecreaseQuantityButtonClickHandler(this.#productsModel.deleteProductFromBasket);
 
       render(basketProduct, this.#basketProductsContainerView.element);
     });

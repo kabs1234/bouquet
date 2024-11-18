@@ -33,12 +33,8 @@ export default class ProductsServiceApi extends ApiService {
     return await ApiService.parseResponse(request);
   };
 
-  deleteProductFromBasket = async (productId) => {
-    const request = await this._load({
-      url: `flowers-shop/products/${productId}`,
-      method: Method.Delete,
-    });
-
-    return await ApiService.parseResponse(request);
-  };
+  deleteProductFromBasket = async (productId) => await this._load({
+    url: `flowers-shop/products/${productId}`,
+    method: Method.Delete,
+  });
 }

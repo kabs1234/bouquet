@@ -1,3 +1,4 @@
+import { UpdateType } from '../constants.js';
 import Observable from '../framework/observable.js';
 import { BASKET } from '../mocks/basket.js';
 import { PRODUCTS } from '../mocks/products.js';
@@ -32,34 +33,48 @@ export default class ProductsModel extends Observable {
     return this.#basket;
   }
 
-  addProductToBasket = (product) => {
-    this.basket.products[product] = 1;
-    console.log(this.basket, product);
+  addProductToBasket = async (productId) => {
+    try {
+      await this.#productService.addProductToBasket(productId);
 
-    this._notify();
+      this.#basket = {
+        ...this.#basket,
+        'productCount': Object.keys(this.basket.products).length + 1,
+        'sum': this.#basket.sum + this.products.find((element) => element.id === productId).price
+      };
+
+      if (Object.keys(this.basket).includes(productId)) {
+        this.basket.products[productId] += 1;
+      } else {
+        this.#basket.products[productId] = 1;
+      }
+
+      this._notify(UpdateType.Patch, productId);
+    } catch (err) {
+      throw new Error(`An error occurred adding product to basket: ${err.message}`);
+    }
   };
 
-  increaseProductQuantityByOne = (product) => {
-    this.basket.products[product] += 1;
+  deleteProductFromBasket = async (productId) => {
+    try {
+      await this.#productService.deleteProductFromBasket(productId);
 
-    console.log(this.basket);
+      this.#basket = {
+        ...this.#basket,
+        'productCount': Object.keys(this.basket.products).length - 1,
+        'sum': this.#basket.sum - this.products.find((element) => element.id === productId).price
+      };
 
-    this._notify();
-  };
+      if (Object.keys(this.basket).includes(productId)) {
+        this.basket.products[productId] -= 1;
+      } else {
+        delete this.basket.products[productId];
+      }
 
-  decreaseProductQuantityByOne = (product) => {
-    this.basket.products[product] -= 1;
-
-    console.log(this.basket);
-
-    this._notify();
-  };
-
-  deleteProductFromBasket = (product) => {
-    delete this.basket.products[product];
-    console.log(this.basket, product);
-
-    this._notify();
+      this._notify(UpdateType.Patch, productId);
+    } catch (err) {
+      throw new Error(`An error occurred deleting product in basket: ${err.message}`);
+    }
   };
 
   clearBasket = () => {
@@ -80,10 +95,9 @@ export default class ProductsModel extends Observable {
       this.#productsList = [...productsListRequest];
       this.#basket = Object.keys(basketRequest).length ? {...basketRequest} : this.#basket;
 
-      this._notify();
-
+      this._notify(UpdateType.Initalize);
     } catch (err) {
-      throw new Error(`An error occurred: ${err.message}`);
+      throw new Error(`An error occurred in initalizing data: ${err.message}`);
     }
   };
 }

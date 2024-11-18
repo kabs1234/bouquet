@@ -1,5 +1,5 @@
 import { remove, render, replace } from '../framework/render.js';
-import { FilterColor, FilterReason, SortByPrice } from '../constants.js';
+import { FilterColor, FilterReason, SortByPrice, UpdateType } from '../constants.js';
 import CatalogView from '../views/catalog-views/catalog-view.js';
 import CatalogContainerView from '../views/catalog-views/catalog-container-view.js';
 import CatalogButtonsView from '../views/catalog-views/catalog-buttons-view.js';
@@ -105,13 +105,34 @@ export default class CatalogPresenter {
     this.#handleViewChange();
   };
 
-  #handleViewChange = () => {
-    if (this.#isLoading) {
-      this.#isLoading = false;
-      remove(this.#catalogLoadingMessageView);
-      this.#catalogLoadingMessageView = null;
-    }
+  #handleViewChange = (updateType, productId) => {
+    switch (updateType) {
+      case UpdateType.Initalize:
+        this.#isLoading = false;
+        remove(this.#catalogLoadingMessageView);
+        this.#catalogLoadingMessageView = null;
 
+        this.initalize();
+        break;
+      case UpdateType.Patch: {
+        const newCatalogProduct = this.products.find((product) => product.id === productId);
+        const newCatalogProductView = new CatalogProductView(newCatalogProduct, this.#productsModel.basket);
+
+        newCatalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
+        newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+
+        replace(newCatalogProductView, this.#productsView.get(productId));
+
+        this.#productsView.delete(productId);
+        this.#productsView.set(productId, newCatalogProductView);
+        break;
+      }
+      case UpdateType.Major:
+        this.#resetCatalogProductsList();
+    }
+  };
+
+  #resetCatalogProductsList = () => {
     this.#showedProductsAmount = 0;
     this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
 
@@ -196,17 +217,6 @@ export default class CatalogPresenter {
     } else {
       this.#productsModel.addProductToBasket(productId);
     }
-
-    const newCatalogProduct = this.products.find((product) => product.id === productId);
-    const newCatalogProductView = new CatalogProductView(newCatalogProduct, this.#productsModel.basket);
-
-    newCatalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
-    newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
-
-    replace(newCatalogProductView, this.#productsView.get(productId));
-
-    this.#productsView.delete(productId);
-    this.#productsView.set(productId, newCatalogProductView);
   };
 
   #renderMoreProducts = () => {
