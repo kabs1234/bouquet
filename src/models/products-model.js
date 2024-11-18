@@ -5,7 +5,11 @@ import { PRODUCTS } from '../mocks/products.js';
 export default class ProductsModel extends Observable {
   #productService = null;
   #productsList = [];
-  #basket = null;
+  #basket = {
+    'products': {},
+    'productCount': 0,
+    'sum': 0
+  };
 
   constructor(productService) {
     super();
@@ -74,12 +78,12 @@ export default class ProductsModel extends Observable {
       const basketRequest = await this.#productService.getBasket();
 
       this.#productsList = [...productsListRequest];
-      this.#basket = {...basketRequest};
+      this.#basket = Object.keys(basketRequest).length ? {...basketRequest} : this.#basket;
 
       this._notify();
 
     } catch (err) {
-      throw new Error('error');
+      throw new Error(`An error occurred: ${err.message}`);
     }
   };
 }

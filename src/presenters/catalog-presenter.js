@@ -7,6 +7,7 @@ import CatalogProductsContainerView from '../views/catalog-views/catalog-product
 import CatalogProductView from '../views/catalog-views/catalog-product-view.js';
 import CatalogProductsEmptyMessageView from '../views/catalog-views/catalog-products-empty-message-view.js';
 import CatalogSortingsView from '../views/catalog-views/catalog-sortings-view.js';
+import CatalogLoadingMessageView from '../views/catalog-views/catalog-loading-message-view.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
@@ -22,8 +23,9 @@ export default class CatalogPresenter {
   #catalogSortingsView = null;
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
-
   #catalogContainerView = new CatalogContainerView();
+  #catalogLoadingMessageView = new CatalogLoadingMessageView();
+
   #activeSorting = SortByPrice.Increase;
 
   #showedProductsAmount = 0;
@@ -104,6 +106,12 @@ export default class CatalogPresenter {
   };
 
   #handleViewChange = () => {
+    if (this.#isLoading) {
+      this.#isLoading = false;
+      remove(this.#catalogLoadingMessageView);
+      this.#catalogLoadingMessageView = null;
+    }
+
     this.#showedProductsAmount = 0;
     this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
 
@@ -251,6 +259,10 @@ export default class CatalogPresenter {
     render(this.#catalogContainerView, this.#catalogView.element);
   };
 
+  #renderCatalogLoadingMessage = () => {
+    render(this.#catalogLoadingMessageView, this.#catalogContainerView.element);
+  };
+
   resetActiveSorting = () => {
     this.#activeSorting = SortByPrice.Increase;
   };
@@ -260,7 +272,7 @@ export default class CatalogPresenter {
     this.#renderCatalogContainer();
 
     if (this.#isLoading) {
-      this.#isLoading = false;
+      this.#renderCatalogLoadingMessage();
       return;
     }
 
