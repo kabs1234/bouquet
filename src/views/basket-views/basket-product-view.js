@@ -1,9 +1,9 @@
-import AbstractView from '../../framework/view/abstract-view';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { beautifyPrice } from '../../utils/general';
 
 const createBasketProductTemplate = (productData, productQuantity) => (`
   <li class="popup-deferred__item">
-    <div class="deferred-card">
+    <div class="deferred-card ${productData.isDeleting ? 'is-loading' : ''}">
       <div class="deferred-card__img">
         <picture>
           <img src="${productData.previewImage}" width="233" height="393" alt="букет">
@@ -43,22 +43,25 @@ const createBasketProductTemplate = (productData, productQuantity) => (`
   </li>
 `);
 
-export default class BasketProductView extends AbstractView {
-  #productData = null;
+export default class BasketProductView extends AbstractStatefulView {
   #productQuantity = null;
 
   constructor(productData, productQuantity) {
     super();
-    this.#productData = productData;
+    this._state = productData;
     this.#productQuantity = productQuantity;
   }
 
+  _restoreHandlers = () => {
+    this.setDeleteProductButtonClickHandler(this._callback.deleteProductButtonClick);
+    this.setIncreaseQuantityButtonClickHandler(this._callback.increaseQuantityButtonClick);
+    this.setDecreaseQuantityButtonClickHandler(this._callback.decreaseQuantityButtonClick);
+  };
+
   setDeleteProductButtonClickHandler = (callback) => {
     this._callback.deleteProductButtonClick = callback;
-    const allProductCloseButtons = this.element.querySelectorAll('.deferred-card__close-btn');
 
-    allProductCloseButtons.forEach((productCloseButton) =>
-      productCloseButton.addEventListener('click', this.#deleteProductButtonClickHandler));
+    this.element.querySelector('.deferred-card__close-btn').addEventListener('click', this.#deleteProductButtonClickHandler);
   };
 
   #deleteProductButtonClickHandler = (evt) => {
@@ -69,10 +72,7 @@ export default class BasketProductView extends AbstractView {
   setIncreaseQuantityButtonClickHandler = (callback) => {
     this._callback.increaseQuantityButtonClick = callback;
 
-    const allIncreaseQuantityButtons = this.element.querySelectorAll('.btn-calculate--increase');
-
-    allIncreaseQuantityButtons.forEach((increaseButton) =>
-      increaseButton.addEventListener('click', this.#increaseQuantityButtonClickHandler));
+    this.element.querySelector('.btn-calculate--increase').addEventListener('click', this.#increaseQuantityButtonClickHandler);
   };
 
   #increaseQuantityButtonClickHandler = (evt) => {
@@ -83,10 +83,7 @@ export default class BasketProductView extends AbstractView {
   setDecreaseQuantityButtonClickHandler = (callback) => {
     this._callback.decreaseQuantityButtonClick = callback;
 
-    const allDecreaseQuantityButtons = this.element.querySelectorAll('.btn-calculate--decrease');
-
-    allDecreaseQuantityButtons.forEach((decreaseButton) =>
-      decreaseButton.addEventListener('click', this.#decreaseQuantityButtonClickHandler));
+    this.element.querySelector('.btn-calculate--decrease').addEventListener('click', this.#decreaseQuantityButtonClickHandler);
   };
 
   #decreaseQuantityButtonClickHandler = (evt) => {
@@ -95,6 +92,6 @@ export default class BasketProductView extends AbstractView {
   };
 
   get template() {
-    return createBasketProductTemplate(this.#productData, this.#productQuantity);
+    return createBasketProductTemplate(this._state, this.#productQuantity);
   }
 }

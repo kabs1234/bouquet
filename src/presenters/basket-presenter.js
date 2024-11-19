@@ -9,7 +9,7 @@ import BasketProductView from '../views/basket-views/basket-product-view';
 import BasketClearProductsButtonView from '../views/basket-views/basket-clear-products-view';
 import BasketSumView from '../views/basket-views/basket-sum-view';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
-import { MIN_BLOCK_TIME, TIME_BEFORE_BLOCK, UpdateType } from '../constants';
+import { MIN_BLOCK_TIME, TIME_BEFORE_BLOCK } from '../constants';
 
 export default class BasketPresenter extends UiBlocker {
   #productsModel = null;
@@ -20,7 +20,7 @@ export default class BasketPresenter extends UiBlocker {
   #basketHeroView = new BasketHeroView();
   #basketContentContainerView = new BasketContentContainerView();
   #basketCatalogDirectorView = new BasketCatalogDirectorView();
-  #basketClearProductsButtonView = new BasketClearProductsButtonView();
+  #basketClearProductsButtonView = new BasketClearProductsButtonView({isClearing: false});
 
   #basketProductsContainerView = null;
   #basketSumView = null;
@@ -86,11 +86,14 @@ export default class BasketPresenter extends UiBlocker {
 
     basketProductsData.map((element) => {
       const basketProductQuantity = this.basketProducts[element.id];
-      const basketProduct = new BasketProductView(element, basketProductQuantity);
+      const basketProduct = new BasketProductView({...element, isDeleting: false}, basketProductQuantity);
 
       basketProduct.setDeleteProductButtonClickHandler((productId) => {
         this.block();
-        this.#productsModel.deleteProductFromBasket(productId);
+        basketProduct.updateElement({...element, isDeleting: true});
+        this.#productsModel.deleteProductFromBasket(productId).catch(() => {
+          basketProduct.updateElement({...element, isDeleting: false});
+        });
       });
 
       basketProduct.setIncreaseQuantityButtonClickHandler((productId) => {
@@ -107,15 +110,12 @@ export default class BasketPresenter extends UiBlocker {
     });
   };
 
-  #handleBasketChange = (updateType) => {
+  #handleBasketChange = () => {
     this.unblock();
 
-    switch(updateType) {
-      case UpdateType.Quantity:
-        this.#renderBasketProductsContainerView();
-        this.#renderBasketProducts();
-        this.#renderBasketSum();
-    }
+    this.#renderBasketProductsContainerView();
+    this.#renderBasketProducts();
+    this.#renderBasketSum();
   };
 
   #renderBasketClearProductsButton = () => {
@@ -145,6 +145,7 @@ export default class BasketPresenter extends UiBlocker {
     this.#renderBasketContentContainer();
 
     this.#renderCatalogDirectorView();
+
     this.#renderBasketProductsContainerView();
     this.#renderBasketProducts();
 
@@ -158,16 +159,20 @@ export default class BasketPresenter extends UiBlocker {
   };
 
   #clearProductsBasket = () => {
-    remove(this.#basketProductsContainerView);
-    this.#basketProductsContainerView = null;
+    if (Object.keys(this.basketProducts).length === 0) {
+      return;
+    }
 
-    remove(this.#basketClearProductsButtonView);
-    this.#basketClearProductsButtonView = null;
+    this.#basketClearProductsButtonView.updateElement({isClearing: true});
 
-    remove(this.#basketSumView);
-    this.#basketSumView = null;
-
-    this.#productsModel.clearBasket();
+    this.#productsModel.clearBasket()
+      .then(() => {
+        this.#basketClearProductsButtonView.updateElement({isClearing: false});
+      })
+      .catch(() => {
+        this.#basketClearProductsButtonView.updateElement({isClearing: false});
+        this.#basketClearProductsButtonView.shake();
+      });
   };
 
   #removeBasket = () => {
