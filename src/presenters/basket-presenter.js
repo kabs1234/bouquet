@@ -8,8 +8,10 @@ import BasketProductsContainerView from '../views/basket-views/basket-products-c
 import BasketProductView from '../views/basket-views/basket-product-view';
 import BasketClearProductsButtonView from '../views/basket-views/basket-clear-products-view';
 import BasketSumView from '../views/basket-views/basket-sum-view';
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
+import { MIN_BLOCK_TIME, TIME_BEFORE_BLOCK, UpdateType } from '../constants';
 
-export default class BasketPresenter {
+export default class BasketPresenter extends UiBlocker {
   #productsModel = null;
   #container = null;
 
@@ -26,6 +28,8 @@ export default class BasketPresenter {
   #redirectToCatalogFunction = null;
 
   constructor(container, productsModel, redirectToCatalogFunction, renderPosition = RenderPosition.BEFOREEND) {
+    super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
+
     this.#container = container;
     this.#productsModel = productsModel;
     this.#redirectToCatalogFunction = redirectToCatalogFunction;
@@ -84,18 +88,34 @@ export default class BasketPresenter {
       const basketProductQuantity = this.basketProducts[element.id];
       const basketProduct = new BasketProductView(element, basketProductQuantity);
 
-      basketProduct.setDeleteProductButtonClickHandler(this.#productsModel.deleteProductFromBasket);
-      basketProduct.setIncreaseQuantityButtonClickHandler(this.#productsModel.addProductToBasket);
-      basketProduct.setDecreaseQuantityButtonClickHandler(this.#productsModel.deleteProductFromBasket);
+      basketProduct.setDeleteProductButtonClickHandler((productId) => {
+        this.block();
+        this.#productsModel.deleteProductFromBasket(productId);
+      });
+
+      basketProduct.setIncreaseQuantityButtonClickHandler((productId) => {
+        this.block();
+        this.#productsModel.incrementProductQuantity(productId);
+      });
+
+      basketProduct.setDecreaseQuantityButtonClickHandler((productId) => {
+        this.block();
+        this.#productsModel.decrementProductQuantity(productId);
+      });
 
       render(basketProduct, this.#basketProductsContainerView.element);
     });
   };
 
-  #handleBasketChange = () => {
-    this.#renderBasketProductsContainerView();
-    this.#renderBasketProducts();
-    this.#renderBasketSum();
+  #handleBasketChange = (updateType) => {
+    this.unblock();
+
+    switch(updateType) {
+      case UpdateType.Quantity:
+        this.#renderBasketProductsContainerView();
+        this.#renderBasketProducts();
+        this.#renderBasketSum();
+    }
   };
 
   #renderBasketClearProductsButton = () => {

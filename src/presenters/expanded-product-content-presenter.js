@@ -1,6 +1,6 @@
 import { render, replace } from '../framework/render';
 import ExpandedProductDescriptionView from '../views/expanded-product-description-view';
-import ExpandedProductSliderView from '../views/expanded-product-slider';
+import ExpandedProductSliderView from '../views/expanded-product-slider-view';
 
 export default class ExpandedProductContentPresenter {
   #productData = null;
@@ -26,14 +26,14 @@ export default class ExpandedProductContentPresenter {
     render(this.#expandedProductDescriptionView, this.#container);
   };
 
-  #changeFavoriteButtonState = () => {
+  #changeFavoriteButtonState = async () => {
     const productsId = Object.keys(this.#productsModel.basket.products);
     const isFavorite = productsId.includes(this.#productData.id);
 
     if (isFavorite) {
-      this.#productsModel.deleteProductFromBasket(this.#productData.id);
+      await this.#productsModel.deleteProductFromBasket(this.#productData.id);
     } else {
-      this.#productsModel.addProductToBasket(this.#productData.id);
+      await this.#productsModel.addProductToBasket(this.#productData.id);
     }
 
     const newExpandedProductDescriptionView = new ExpandedProductDescriptionView(this.#productData, this.#productsModel.basket.products);

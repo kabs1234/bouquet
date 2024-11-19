@@ -1,6 +1,9 @@
 export const END_POINT = 'https://grading.objects.htmlacademy.pro';
 export const AUTHORIZATION_TOKEN = 'Basic !SK751jf812jg8d';
 
+export const TIME_BEFORE_BLOCK = 0;
+export const MIN_BLOCK_TIME = 300;
+
 export const FilterReason = {
   All: 'all',
   Birthday: 'birthdayboy',
@@ -47,4 +50,5 @@ export const UpdateType = {
   Initalize: 'Initalize',
   Patch: 'Patch',
   Major: 'Major',
+  Quantity: 'Quantity',
 };

@@ -39,15 +39,11 @@ export default class ProductsModel extends Observable {
 
       this.#basket = {
         ...this.#basket,
-        'productCount': Object.keys(this.basket.products).length + 1,
+        'productCount': Object.values(this.basket.products).reduce((prev, current) => prev + current, 0) + 1,
         'sum': this.#basket.sum + this.products.find((element) => element.id === productId).price
       };
 
-      if (Object.keys(this.basket).includes(productId)) {
-        this.basket.products[productId] += 1;
-      } else {
-        this.#basket.products[productId] = 1;
-      }
+      this.#basket.products[productId] = 1;
 
       this._notify(UpdateType.Patch, productId);
     } catch (err) {
@@ -57,23 +53,65 @@ export default class ProductsModel extends Observable {
 
   deleteProductFromBasket = async (productId) => {
     try {
+      while (this.basket.products[productId] !== 1) {
+        await this.#productService.deleteProductFromBasket(productId);
+        this.basket.products[productId] -= 1;
+        this.basket.sum -= this.products.find((element) => element.id === productId).price;
+      }
+
       await this.#productService.deleteProductFromBasket(productId);
 
       this.#basket = {
         ...this.#basket,
-        'productCount': Object.keys(this.basket.products).length - 1,
+        'productCount': Object.values(this.basket.products).reduce((prev, current) => prev + current, 0) - 1,
         'sum': this.#basket.sum - this.products.find((element) => element.id === productId).price
       };
 
-      if (Object.keys(this.basket).includes(productId)) {
-        this.basket.products[productId] -= 1;
-      } else {
-        delete this.basket.products[productId];
-      }
+      delete this.basket.products[productId];
 
-      this._notify(UpdateType.Patch, productId);
+      this._notify(UpdateType.Quantity, productId);
     } catch (err) {
       throw new Error(`An error occurred deleting product in basket: ${err.message}`);
+    }
+  };
+
+  incrementProductQuantity = async (productId) => {
+    try {
+      await this.#productService.addProductToBasket(productId);
+
+      this.#basket = {
+        ...this.#basket,
+        'productCount': Object.values(this.basket.products).reduce((prev, current) => prev + current, 0) + 1,
+        'sum': this.#basket.sum + this.products.find((element) => element.id === productId).price
+      };
+
+      this.basket.products[productId] += 1;
+
+      this._notify(UpdateType.Quantity, productId);
+    } catch (err) {
+      throw new Error(`An error occurred incrementing product quantity: ${err.message, err.stack}`);
+    }
+  };
+
+  decrementProductQuantity = async (productId) => {
+    try {
+      await this.#productService.deleteProductFromBasket(productId);
+
+      this.#basket = {
+        ...this.#basket,
+        'productCount': Object.values(this.basket.products).reduce((prev, current) => prev + current, 0) - 1,
+        'sum': this.#basket.sum - this.products.find((element) => element.id === productId).price
+      };
+
+      if (this.basket.products[productId] === 1) {
+        delete this.basket.products[productId];
+      } else {
+        this.basket.products[productId] -= 1;
+      }
+
+      this._notify(UpdateType.Quantity, productId);
+    } catch (err) {
+      throw new Error(`An error occurred decrementing product quantity: ${err.message}`);
     }
   };
 
@@ -85,6 +123,16 @@ export default class ProductsModel extends Observable {
     });
 
     this._notify();
+  };
+
+  getExpandedProduct = async (productId) => {
+    try {
+      const request = await this.#productService.getExpandedProductInformation(productId);
+
+      return request;
+    } catch (err) {
+      throw new Error(`An error occurred getting expanded product: ${err.message, err.stack}`);
+    }
   };
 
   initalize = async () => {

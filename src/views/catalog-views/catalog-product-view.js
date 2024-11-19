@@ -77,7 +77,7 @@ export default class CatalogProductView extends AbstractView {
 
   #productClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.productClick(this.#productData);
+    this._callback.productClick(evt.currentTarget.dataset.openModal);
   };
 
   setFavoriteButtonClickHandler = (callback) => {

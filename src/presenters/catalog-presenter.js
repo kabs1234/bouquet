@@ -1,5 +1,5 @@
 import { remove, render, replace } from '../framework/render.js';
-import { FilterColor, FilterReason, SortByPrice, UpdateType } from '../constants.js';
+import { FilterColor, FilterReason, MIN_BLOCK_TIME, SortByPrice, TIME_BEFORE_BLOCK, UpdateType } from '../constants.js';
 import CatalogView from '../views/catalog-views/catalog-view.js';
 import CatalogContainerView from '../views/catalog-views/catalog-container-view.js';
 import CatalogButtonsView from '../views/catalog-views/catalog-buttons-view.js';
@@ -8,10 +8,11 @@ import CatalogProductView from '../views/catalog-views/catalog-product-view.js';
 import CatalogProductsEmptyMessageView from '../views/catalog-views/catalog-products-empty-message-view.js';
 import CatalogSortingsView from '../views/catalog-views/catalog-sortings-view.js';
 import CatalogLoadingMessageView from '../views/catalog-views/catalog-loading-message-view.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
-export default class CatalogPresenter {
+export default class CatalogPresenter extends UiBlocker {
   #container = null;
   #productsModel = null;
   #filtersModel = null;
@@ -35,6 +36,8 @@ export default class CatalogPresenter {
   #isLoading = true;
 
   constructor(container, productsModel, filtersModel, renderExpandedProductFunction) {
+    super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
+
     this.#container = container;
     this.#productsModel = productsModel;
     this.#filtersModel = filtersModel;
@@ -97,12 +100,12 @@ export default class CatalogPresenter {
 
   #setSortingByPriceToIncreasing = () => {
     this.#activeSorting = SortByPrice.Increase;
-    this.#handleViewChange();
+    this.#handleViewChange(UpdateType.Major);
   };
 
   #setSortingByPriceToDecreasing = () => {
     this.#activeSorting = SortByPrice.Decrease;
-    this.#handleViewChange();
+    this.#handleViewChange(UpdateType.Major);
   };
 
   #handleViewChange = (updateType, productId) => {

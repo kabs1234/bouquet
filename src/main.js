@@ -70,8 +70,10 @@ function renderBasket() {
   basketPresenter.initalize();
 }
 
-function renderExpandedProduct(productData) {
-  const expandedProductPresenter = new ExpandedProductContentPresenter(productData, productsModel, modalContentContainer);
+async function renderExpandedProduct(productId) {
+  const expandedProductData = await productsModel.getExpandedProduct(productId);
+
+  const expandedProductPresenter = new ExpandedProductContentPresenter(expandedProductData, productsModel, modalContentContainer);
 
   const imageSlider = new ImageSlider('.image-slider');
 
