@@ -26,13 +26,15 @@ export default class BasketPresenter extends UiBlocker {
   #basketSumView = null;
   #renderPosition = null;
   #redirectToCatalogFunction = null;
+  #showMain = null;
 
-  constructor(container, productsModel, redirectToCatalogFunction, renderPosition = RenderPosition.BEFOREEND) {
+  constructor(container, productsModel, redirectToCatalogFunction, showMain, renderPosition = RenderPosition.BEFOREEND) {
     super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
 
     this.#container = container;
     this.#productsModel = productsModel;
     this.#redirectToCatalogFunction = redirectToCatalogFunction;
+    this.#showMain = showMain;
     this.#renderPosition = renderPosition;
 
     productsModel.addObserver(this.#handleBasketChange);
@@ -163,6 +165,8 @@ export default class BasketPresenter extends UiBlocker {
       return;
     }
 
+    this.block();
+
     this.#basketClearProductsButtonView.updateElement({isClearing: true});
 
     this.#productsModel.clearBasket()
@@ -178,5 +182,6 @@ export default class BasketPresenter extends UiBlocker {
   #removeBasket = () => {
     remove(this.#basketView);
     this.#basketView = null;
+    this.#showMain();
   };
 }

@@ -1,8 +1,10 @@
+import { MIN_BLOCK_TIME, TIME_BEFORE_BLOCK } from '../constants';
 import { render, replace } from '../framework/render';
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import ExpandedProductDescriptionView from '../views/expanded-product-description-view';
 import ExpandedProductSliderView from '../views/expanded-product-slider-view';
 
-export default class ExpandedProductContentPresenter {
+export default class ExpandedProductContentPresenter extends UiBlocker {
   #productData = null;
   #productsModel = null;
   #container = null;
@@ -11,6 +13,7 @@ export default class ExpandedProductContentPresenter {
   #expandedProductDescriptionView = null;
 
   constructor(productData, productsModel, container) {
+    super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
     this.#productData = productData;
     this.#container = container;
     this.#productsModel = productsModel;
@@ -30,6 +33,8 @@ export default class ExpandedProductContentPresenter {
     const productsId = Object.keys(this.#productsModel.basket.products);
     const isFavorite = productsId.includes(this.#productData.id);
 
+    this.block();
+
     if (isFavorite) {
       await this.#productsModel.deleteProductFromBasket(this.#productData.id);
     } else {
@@ -42,5 +47,6 @@ export default class ExpandedProductContentPresenter {
     replace(newExpandedProductDescriptionView, this.#expandedProductDescriptionView);
 
     this.#expandedProductDescriptionView = newExpandedProductDescriptionView;
+    this.unblock();
   };
 }

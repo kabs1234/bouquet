@@ -51,7 +51,6 @@ function showMain() {
 }
 
 function redirectToCatalog() {
-  showMain();
   catalogPresenter.swipeToCatalogTop();
   catalogPresenter.resetActiveSorting();
   filtersModel.setfilterReason(FilterType.Reason, FilterReason.All);
@@ -65,22 +64,30 @@ function renderBasket() {
     return;
   }
 
-  const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, RenderPosition.BEFOREBEGIN);
+  const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, showMain, RenderPosition.BEFOREBEGIN);
 
   basketPresenter.initalize();
 }
 
 async function renderExpandedProduct(productId) {
-  const expandedProductData = await productsModel.getExpandedProduct(productId);
+  catalogPresenter.block();
 
-  const expandedProductPresenter = new ExpandedProductContentPresenter(expandedProductData, productsModel, modalContentContainer);
+  try {
+    const expandedProductData = await productsModel.getExpandedProduct(productId);
 
-  const imageSlider = new ImageSlider('.image-slider');
+    const expandedProductPresenter = new ExpandedProductContentPresenter(expandedProductData, productsModel, modalContentContainer);
 
-  initModals();
+    const imageSlider = new ImageSlider('.image-slider');
 
-  modals.open('popup-data-attr');
+    initModals();
 
-  expandedProductPresenter.renderExpandedProduct();
-  imageSlider.init();
+    modals.open('popup-data-attr');
+
+    expandedProductPresenter.renderExpandedProduct();
+    imageSlider.init();
+  } catch (err) {
+    throw new Error(`An error occurred expanding product: ${err.message, err.stack}`);
+  } finally {
+    catalogPresenter.unblock();
+  }
 }

@@ -133,6 +133,8 @@ export default class CatalogPresenter extends UiBlocker {
       case UpdateType.Major:
         this.#resetCatalogProductsList();
     }
+
+    this.unblock();
   };
 
   #resetCatalogProductsList = () => {
@@ -215,6 +217,7 @@ export default class CatalogPresenter extends UiBlocker {
     const productsId = Object.keys(this.#productsModel.basket.products);
     const isFavorite = productsId.includes(productId);
 
+    this.block();
     if (isFavorite) {
       this.#productsModel.deleteProductFromBasket(productId);
     } else {
