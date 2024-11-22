@@ -1,4 +1,4 @@
-import { FilterType, UpdateType } from '../constants';
+import { UpdateType } from '../constants';
 import { remove, render, replace } from '../framework/render';
 import FilterColorView from '../views/filter-color-view';
 import FilterReasonView from '../views/filter-reason-view';
