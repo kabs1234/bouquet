@@ -9,7 +9,8 @@ const createFilterColorOptionTemplate = (id, color, label, dataFilterColor, acti
       id="filter-colors-field-id-${id}"
       name="colors"
       value="color-${color}"
-      ${activeFilterColors.includes(dataFilterColor) ? 'checked' : ''}>
+      ${activeFilterColors.includes(dataFilterColor) ? 'checked' : ''}
+      data-filter-color="${dataFilterColor}">
     <label class="filter-field-img__label" for="filter-colors-field-id-${id}">
       <span class="filter-field-img__img">
         <picture>
@@ -17,7 +18,7 @@ const createFilterColorOptionTemplate = (id, color, label, dataFilterColor, acti
           <img src="img/content/filter-${color}.png" srcset="img/content/filter-${color}@2x.png 2x" width="130" height="130" alt="${label}" data-filter-color="${dataFilterColor}">
         </picture>
       </span>
-      <span class="filter-field-img__text" data-filter-color="${dataFilterColor}">${label}</span>
+      <span class="filter-field-img__text">${label}</span>
     </label>
   </div>`
 );
@@ -63,17 +64,17 @@ export default class FilterColorView extends AbstractView {
     return createFilterColorTemplate(this.#activeFilterColors);
   }
 
-  setFilterColorFormChangeHandler = (callback) => {
-    this._callback.filterColorFormChange = callback;
-    this.element.querySelector('.filter-color__form').addEventListener('click', this.#filterColorFormChangeHandler);
+  setFilterColorInputsClickHandler = (callback) => {
+    this._callback.filterColorInputsClick = callback;
+    const filterColorInputs = this.element.querySelectorAll('.filter-field-img__input');
+
+    filterColorInputs.forEach((colorInput) => colorInput.addEventListener('click', this.#filterColorInputsClickHandler));
   };
 
-  #filterColorFormChangeHandler = (evt) => {
+  #filterColorInputsClickHandler = (evt) => {
     evt.preventDefault();
 
-    if (evt.target.tagName === 'SPAN' || evt.target.tagName === 'IMG') {
-      const newFilterColor = evt.target.closest('[data-filter-color]').dataset.filterColor;
-      this._callback.filterColorFormChange(newFilterColor);
-    }
+    const newFilterColor = evt.currentTarget.dataset.filterColor;
+    this._callback.filterColorInputsClick(newFilterColor);
   };
 }

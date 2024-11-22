@@ -43,7 +43,7 @@ export default class FiltersPresenter {
     const previousFilterColorView = this.#filterColorView;
 
     this.#filterColorView = new FilterColorView(this.filterColors);
-    this.#filterColorView.setFilterColorFormChangeHandler(this.#setFilterColor);
+    this.#filterColorView.setFilterColorInputsClickHandler(this.#setFilterColor);
 
     if (previousFilterColorView === null) {
       render(this.#filterColorView, this.#container);
