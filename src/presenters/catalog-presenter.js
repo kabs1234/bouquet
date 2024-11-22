@@ -9,6 +9,7 @@ import CatalogProductsEmptyMessageView from '../views/catalog-views/catalog-prod
 import CatalogSortingsView from '../views/catalog-views/catalog-sortings-view.js';
 import CatalogLoadingMessageView from '../views/catalog-views/catalog-loading-message-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import CatalogLoadingErrorMessageView from '../views/catalog-views/catalog-loading-error-message-view.js';
 
 const PRODUCTS_RENDERING_AMOUNT_STEP = 6;
 
@@ -25,7 +26,9 @@ export default class CatalogPresenter extends UiBlocker {
   #catalogButtonsView = null;
   #catalogProductsContainerView = null;
   #catalogContainerView = new CatalogContainerView();
+
   #catalogLoadingMessageView = new CatalogLoadingMessageView();
+  #catalogLoadingErrorMessageView = new CatalogLoadingErrorMessageView();
 
   #activeSorting = SortByPrice.Increase;
 
@@ -112,9 +115,7 @@ export default class CatalogPresenter extends UiBlocker {
     switch (updateType) {
       case UpdateType.Initalize:
         this.#isLoading = false;
-        remove(this.#catalogLoadingMessageView);
-        this.#catalogLoadingMessageView = null;
-
+        this.#clearCatalogLoadingMessage();
         this.initalize();
         break;
       case UpdateType.Patch: {
@@ -132,6 +133,14 @@ export default class CatalogPresenter extends UiBlocker {
       }
       case UpdateType.Major:
         this.#resetCatalogProductsList();
+        break;
+      case UpdateType.LoadingError:
+        this.#clearCatalogLoadingMessage();
+        this.#renderCatalogErrorLoadingMessage();
+        break;
+      case UpdateType.ChangingProductError:
+        this.#productsView.get(productId).shake();
+        break;
     }
 
     this.unblock();
@@ -177,6 +186,11 @@ export default class CatalogPresenter extends UiBlocker {
   #clearCatalogButtonsView = () => {
     remove(this.#catalogButtonsView);
     this.#catalogButtonsView = null;
+  };
+
+  #clearCatalogLoadingMessage = () => {
+    remove(this.#catalogLoadingMessageView);
+    this.#catalogLoadingMessageView = null;
   };
 
   #renderCatalogProductsEmptyMessage = () => {
@@ -277,6 +291,10 @@ export default class CatalogPresenter extends UiBlocker {
 
   #renderCatalogLoadingMessage = () => {
     render(this.#catalogLoadingMessageView, this.#catalogContainerView.element);
+  };
+
+  #renderCatalogErrorLoadingMessage = () => {
+    render(this.#catalogLoadingErrorMessageView, this.#catalogContainerView.element);
   };
 
   resetActiveSorting = () => {

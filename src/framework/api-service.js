@@ -2,6 +2,8 @@
  * Класс для отправки запросов к серверу
  */
 export default class ApiService {
+  #expandedProductController = new AbortController();
+
   /**
    * @param {string} endPoint Адрес сервера
    * @param {string} authorization Авторизационный токен
@@ -9,6 +11,15 @@ export default class ApiService {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
+  }
+
+  get expandedProductSignal() {
+    return this.#expandedProductController.signal;
+  }
+
+  abortRequest() {
+    this.#expandedProductController.abort();
+    this.#expandedProductController = new AbortController();
   }
 
   /**
@@ -30,7 +41,7 @@ export default class ApiService {
 
     const response = await fetch(
       `${this._endPoint}/${url}`,
-      {method, body, headers},
+      {method, body, headers, signal: this.expandedProductSignal},
     );
 
     try {

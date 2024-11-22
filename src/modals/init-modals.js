@@ -1,21 +1,7 @@
+import { closeCallback } from '../main';
 import { Modals } from './modals';
 
 let modals;
-
-// Здесь реализован пример открытия модалки через колбэк закрытия
-// const openModalInCloseCallback = (name, context = this) => {
-//   context._enableScrolling = false;
-//   context._setSettings('default');
-//   modals.open(name);
-// };
-
-const closeCallback = () => {
-  const expandedProductDescription = document.querySelector('.product-description');
-  const imageSlider = document.querySelector('.image-slider');
-
-  expandedProductDescription.remove();
-  imageSlider.remove();
-};
 
 const settings = {
   default: {
@@ -26,7 +12,6 @@ const settings = {
     focusBack: true,
     eventTimeout: 400,
     openCallback: false,
-    closeCallback,
   },
 };
 
@@ -40,7 +25,7 @@ const initModals = () => {
     });
   }
 
-  modals = new Modals(settings);
+  modals = new Modals({default: {...settings.default, closeCallback}});
 };
 
 export { modals, initModals };

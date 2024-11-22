@@ -24,7 +24,7 @@ export default class ProductsServiceApi extends ApiService {
     return await ApiService.parseResponse(request);
   };
 
-  addProductToBasket = async (productId) => {
+  addOrIncrementProduct = async (productId) => {
     const request = await this._load({
       url: `flowers-shop/products/${productId}`,
       method: Method.Put,
@@ -33,7 +33,7 @@ export default class ProductsServiceApi extends ApiService {
     return await ApiService.parseResponse(request);
   };
 
-  deleteProductFromBasket = async (productId) => await this._load({
+  deleteOrDecrementProduct = async (productId) => await this._load({
     url: `flowers-shop/products/${productId}`,
     method: Method.Delete,
   });

@@ -50,5 +50,7 @@ export const UpdateType = {
   Initalize: 'Initalize',
   Patch: 'Patch',
   Major: 'Major',
-  Quantity: 'Quantity',
+  LoadingError: 'Loading error',
+  ChangingProductError: 'Changing product Error',
+  ClearingBasketError: 'Clearing basket error'
 };

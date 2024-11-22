@@ -1,5 +1,6 @@
 import { UpdateType } from '../constants.js';
 import Observable from '../framework/observable.js';
+import ClosingExpandedProductError from '../utils/closing-expanded-product-error.js';
 
 export default class ProductsModel extends Observable {
   #productService = null;
@@ -25,7 +26,7 @@ export default class ProductsModel extends Observable {
 
   addProductToBasket = async (productId) => {
     try {
-      await this.#productService.addProductToBasket(productId);
+      await this.#productService.addOrIncrementProduct(productId);
 
       this.#basket = {
         ...this.#basket,
@@ -37,23 +38,14 @@ export default class ProductsModel extends Observable {
 
       this._notify(UpdateType.Major);
     } catch (err) {
+      this._notify(UpdateType.ChangingProductError, productId);
       throw new Error(`An error occurred adding product to basket: ${err.message}`);
-    }
-  };
-
-  deleteProductFromBasket = async (productId) => {
-    try {
-      await this.deleteProduct(productId);
-
-      this._notify(UpdateType.Major);
-    } catch (err) {
-      throw new Error(`An error occurred deleting product in basket: ${err.message}`);
     }
   };
 
   incrementProductQuantity = async (productId) => {
     try {
-      await this.#productService.addProductToBasket(productId);
+      await this.#productService.addOrIncrementProduct(productId);
 
       this.#basket = {
         ...this.#basket,
@@ -65,18 +57,26 @@ export default class ProductsModel extends Observable {
 
       this._notify(UpdateType.Major);
     } catch (err) {
+      this._notify(UpdateType.ChangingProductError, productId);
       throw new Error(`An error occurred incrementing product quantity: ${err.message, err.stack}`);
     }
   };
 
-  deleteProduct = async (productId) => {
-    while (this.basket.products[productId]) {
-      await this.decreaseQuantityOrDeleteProduct(productId);
+  deleteProductFromBasket = async (productId) => {
+    try {
+      while (this.basket.products[productId]) {
+        await this.decreaseQuantityOrDeleteProduct(productId);
+      }
+
+      this._notify(UpdateType.Major);
+    } catch (err) {
+      this._notify(UpdateType.ChangingProductError, productId);
+      throw new Error(`An error occurred deleting product from basket: ${err.message}`);
     }
   };
 
   decreaseQuantityOrDeleteProduct = async (productId) => {
-    await this.#productService.deleteProductFromBasket(productId);
+    await this.#productService.deleteOrDecrementProduct(productId);
 
     this.#basket = {
       ...this.#basket,
@@ -97,28 +97,40 @@ export default class ProductsModel extends Observable {
 
       this._notify(UpdateType.Major);
     } catch (err) {
+      this._notify(UpdateType.ChangingProductError, productId);
       throw new Error(`An error occurred decrementing product quantity: ${err.message}`);
     }
   };
 
   clearBasket = async () => {
-    const productsId = Object.keys(this.basket.products);
+    try {
+      const productsId = Object.keys(this.basket.products);
 
-    await Promise.all(
-      productsId.map(async (productId) => await this.deleteProduct(productId))
-    );
+      await Promise.all(
+        productsId.map(async (productId) => {
+          while (this.basket.products[productId]) {
+            await this.decreaseQuantityOrDeleteProduct(productId);
+          }
+        })
+      );
 
-    this._notify(UpdateType.Major);
+      this._notify(UpdateType.Major);
+    } catch (err) {
+      this._notify(UpdateType.ClearingBasketError);
+      throw new Error('An error occurred clearing basket');
+    }
   };
-
 
   getExpandedProduct = async (productId) => {
     try {
       const expandedProductRequest = await this.#productService.getExpandedProductInformation(productId);
-
       return expandedProductRequest;
     } catch (err) {
-      throw new Error(`An error occurred getting expanded product: ${err.message, err.stack}`);
+      if (err.name === 'AbortError') {
+        throw new ClosingExpandedProductError(`An error occurred closing expanded product before it's initalizing: ${err.name}`);
+      } else {
+        throw new Error(`An error occurred getting expanded product: ${err.name, err.message}`);
+      }
     }
   };
 
@@ -132,7 +144,8 @@ export default class ProductsModel extends Observable {
 
       this._notify(UpdateType.Initalize);
     } catch (err) {
-      throw new Error(`An error occurred in initalizing data: ${err.message}`);
+      this._notify(UpdateType.LoadingError);
+      throw new Error(`An error occurred in initalizing data: ${err.message, err.stack}`);
     }
   };
 }

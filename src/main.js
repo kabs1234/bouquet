@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
   iosVhFix();
 });
 
-const productsServiceApi = new ProductsServiceApi(END_POINT, AUTHORIZATION_TOKEN);
+export const productsServiceApi = new ProductsServiceApi(END_POINT, AUTHORIZATION_TOKEN);
 
 const headerWrapper = document.querySelector('.header__wrapper');
 const basketHeader = document.querySelector('.header__container');
@@ -33,21 +33,29 @@ const filtersModel = new FiltersModel();
 const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel, renderExpandedProduct);
 const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
-const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, renderBasket, hideMain);
+const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, showBasket);
+const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, showMain, RenderPosition.BEFOREBEGIN);
 
-productsModel.initalize();
 basketHeader.remove();
 basketHeaderPresenter.initalize();
+basketPresenter.initalize();
 infoPresenter.initalize();
 filterPresenter.initalize();
 catalogPresenter.initalize();
+productsModel.initalize();
 
-function hideMain() {
-  main.style = 'display: none;';
-}
+const basket = document.querySelector('.popup-deferred');
+
+basket.style = 'display: none;';
 
 function showMain() {
+  basket.style = 'display: none;';
   main.style = '';
+}
+
+function showBasket() {
+  basket.style = '';
+  main.style = 'display: none;';
 }
 
 function redirectToCatalog() {
@@ -57,37 +65,37 @@ function redirectToCatalog() {
   filtersModel.setFilterColor(FilterType.Color, FilterColor.All);
 }
 
-function renderBasket() {
-  const isBasketRendered = Boolean(document.querySelector('.popup-deferred'));
+export const closeCallback = () => {
+  const expandedProductDescription = document.querySelector('.product-description');
+  const imageSlider = document.querySelector('.image-slider');
+  const expandedProductErrorMessage = document.querySelector('.product-description__error-message');
 
-  if (isBasketRendered) {
-    return;
+  if (expandedProductErrorMessage) {
+    expandedProductErrorMessage.remove();
   }
 
-  const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, showMain, RenderPosition.BEFOREBEGIN);
-
-  basketPresenter.initalize();
-}
+  if (imageSlider) {
+    expandedProductDescription.remove();
+    imageSlider.remove();
+  } else {
+    productsServiceApi.abortRequest();
+  }
+};
 
 async function renderExpandedProduct(productId) {
-  catalogPresenter.block();
+  const modal = document.querySelector('.modal');
+  modal.classList.add('is-loading');
+
+  const imageSlider = new ImageSlider('.image-slider');
+  initModals(closeCallback);
+
+  modals.open('popup-data-attr');
+  const expandedProductPresenter = new ExpandedProductContentPresenter(productId, productsModel, modalContentContainer);
 
   try {
-    const expandedProductData = await productsModel.getExpandedProduct(productId);
-
-    const expandedProductPresenter = new ExpandedProductContentPresenter(expandedProductData, productsModel, modalContentContainer);
-
-    const imageSlider = new ImageSlider('.image-slider');
-
-    initModals();
-
-    modals.open('popup-data-attr');
-
-    expandedProductPresenter.renderExpandedProduct();
+    await expandedProductPresenter.renderExpandedProduct();
     imageSlider.init();
-  } catch (err) {
-    throw new Error(`An error occurred expanding product: ${err.message, err.stack}`);
   } finally {
-    catalogPresenter.unblock();
+    modal.classList.remove('is-loading');
   }
 }

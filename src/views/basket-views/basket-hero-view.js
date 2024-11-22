@@ -1,7 +1,7 @@
 import AbstractView from '../../framework/view/abstract-view.js';
 
-const createBasketHeroTemplate = () => (`
-  <section class="hero hero--popup">
+const createBasketHeroTemplate = (isLoading) => (`
+  <section class="hero hero--popup ${isLoading ? 'is-loading' : ''}">
     <div class="hero__wrapper">
       <div class="hero__background">
         <picture>
@@ -26,8 +26,15 @@ const createBasketHeroTemplate = () => (`
 `);
 
 export default class BasketHeroView extends AbstractView {
+  #isLoading = null;
+
+  constructor(isLoading) {
+    super();
+    this.#isLoading = isLoading;
+  }
+
   get template() {
-    return createBasketHeroTemplate();
+    return createBasketHeroTemplate(this.#isLoading);
   }
 
   setBasketCloseButtonClickHandler = (callback) => {
