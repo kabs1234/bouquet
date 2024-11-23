@@ -30,7 +30,7 @@ export default class ExpandedProductContentPresenter extends UiBlocker {
       this.#productData = await this.#productsModel.getExpandedProduct(this.#productId);
 
       this.#expandedProductDescriptionView = new ExpandedProductDescriptionView(this.#productData, this.#productsModel.basket.products);
-      this.#expandedProductDescriptionView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+      this.#expandedProductDescriptionView.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
 
       this.#expandedProductSliderView = new ExpandedProductSliderView(this.#productData);
 
@@ -49,7 +49,7 @@ export default class ExpandedProductContentPresenter extends UiBlocker {
     render(this.#expandedProductLoadingErrorMessageView, this.#container);
   };
 
-  #changeFavoriteButtonState = async () => {
+  #handleFavoriteButtonClick = async () => {
     const productsId = Object.keys(this.#productsModel.basket.products);
     const isFavorite = productsId.includes(this.#productId);
 
@@ -63,7 +63,7 @@ export default class ExpandedProductContentPresenter extends UiBlocker {
       }
 
       const newExpandedProductDescriptionView = new ExpandedProductDescriptionView(this.#productData, this.#productsModel.basket.products);
-      newExpandedProductDescriptionView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+      newExpandedProductDescriptionView.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
 
       replace(newExpandedProductDescriptionView, this.#expandedProductDescriptionView);
       this.#expandedProductDescriptionView = newExpandedProductDescriptionView;

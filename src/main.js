@@ -1,4 +1,3 @@
-// Импорт вендоров и утилит, не удаляйте его
 import './vendor';
 import { iosVhFix } from './utils/ios-vh-fix';
 import InfoPresenter from './presenters/info-presenter.js';
@@ -33,8 +32,9 @@ const filtersModel = new FiltersModel();
 const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel, renderExpandedProduct);
 const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
-const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, showBasket);
-const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, hideBasket, RenderPosition.BEFOREBEGIN);
+const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, basketButtonClickHandler);
+const basketPresenter = new BasketPresenter(footer, productsModel,
+  directToCatalogButtonClickHandler, basketCloseButtonHandler, RenderPosition.BEFOREBEGIN);
 
 basketHeader.remove();
 basketHeaderPresenter.initalize();
@@ -48,17 +48,17 @@ const basket = document.querySelector('.popup-deferred');
 
 basket.style = 'display: none;';
 
-function hideBasket() {
+function basketCloseButtonHandler() {
   basket.style = 'display: none;';
   main.style = '';
 }
 
-function showBasket() {
+function basketButtonClickHandler() {
   basket.style = '';
   main.style = 'display: none;';
 }
 
-function redirectToCatalog() {
+function directToCatalogButtonClickHandler() {
   catalogPresenter.swipeToCatalogTop();
   catalogPresenter.resetActiveSorting();
   filtersModel.setfilterReason(UpdateType.MAJOR, FilterReason.ALL);

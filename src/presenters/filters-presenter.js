@@ -1,4 +1,4 @@
-import { UpdateType } from '../constants';
+import { FilterType, UpdateType } from '../constants';
 import { remove, render, replace } from '../framework/render';
 import FilterColorView from '../views/filter-color-view';
 import FilterReasonView from '../views/filter-reason-view';
@@ -24,11 +24,15 @@ export default class FiltersPresenter {
     return this.#filtersModel.filterColors;
   }
 
+  get usedFilter() {
+    return this.#filtersModel.usedFilter;
+  }
+
   #renderFilterReason = () => {
     const previousFilterReasonView = this.#filterReasonView;
 
     this.#filterReasonView = new FilterReasonView(this.filterReason);
-    this.#filterReasonView.setFilterReasonFormChangeHandler(this.#setFilterReason);
+    this.#filterReasonView.setFilterReasonFormChangeHandler(this.#handleFilterReasonClick);
 
     if (previousFilterReasonView === null) {
       render(this.#filterReasonView, this.#container);
@@ -43,7 +47,7 @@ export default class FiltersPresenter {
     const previousFilterColorView = this.#filterColorView;
 
     this.#filterColorView = new FilterColorView(this.filterColors);
-    this.#filterColorView.setFilterColorInputsClickHandler(this.#setFilterColor);
+    this.#filterColorView.setFilterColorInputsClickHandler(this.#handleFilterColorClick);
 
     if (previousFilterColorView === null) {
       render(this.#filterColorView, this.#container);
@@ -55,15 +59,21 @@ export default class FiltersPresenter {
   };
 
   #handleFilterChange = () => {
-    this.#renderFilterReason();
-    this.#renderFilterColor();
+    switch(this.usedFilter) {
+      case FilterType.COLOR:
+        this.#renderFilterColor();
+        break;
+      case FilterType.REASON:
+        this.#renderFilterReason();
+        break;
+    }
   };
 
-  #setFilterReason = (newFilterReason) => {
+  #handleFilterReasonClick = (newFilterReason) => {
     this.#filtersModel.setfilterReason(UpdateType.MAJOR, newFilterReason);
   };
 
-  #setFilterColor = (newFilterColor) => {
+  #handleFilterColorClick = (newFilterColor) => {
     this.#filtersModel.setFilterColor(UpdateType.MAJOR, newFilterColor);
   };
 

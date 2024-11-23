@@ -35,6 +35,11 @@ export const ProductType = {
   MOTHERDAY: 'Маме',
 };
 
+export const FilterType = {
+  REASON: 'Reason',
+  COLOR: 'Color',
+};
+
 export const Method = {
   GET: 'GET',
   PUT: 'PUT',

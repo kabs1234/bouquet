@@ -30,18 +30,18 @@ export default class BasketPresenter extends UiBlocker {
   #basketProductsContainerView = null;
   #basketSumView = null;
   #renderPosition = null;
-  #redirectToCatalogFunction = null;
-  #hideBasket = null;
+  #directToCatalogButtonClickHandler = null;
+  #handleBasketCloseButtonClick = null;
 
   #basketProductsViews = new Map();
 
-  constructor(container, productsModel, redirectToCatalogFunction, hideBasket, renderPosition = RenderPosition.BEFOREEND) {
+  constructor(container, productsModel, directToCatalogButtonClickHandler, basketCloseButtonHandler, renderPosition = RenderPosition.BEFOREEND) {
     super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
 
     this.#container = container;
     this.#productsModel = productsModel;
-    this.#redirectToCatalogFunction = redirectToCatalogFunction;
-    this.#hideBasket = hideBasket;
+    this.#directToCatalogButtonClickHandler = directToCatalogButtonClickHandler;
+    this.#handleBasketCloseButtonClick = basketCloseButtonHandler;
     this.#renderPosition = renderPosition;
 
     productsModel.addObserver(this.#handleBasketChange);
@@ -67,7 +67,7 @@ export default class BasketPresenter extends UiBlocker {
     const previousBasketHeroView = this.#basketHeroView;
 
     this.#basketHeroView = new BasketHeroView(this.#isLoading);
-    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#hideBasket);
+    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#handleBasketCloseButtonClick);
 
     if (previousBasketHeroView === null) {
       render(this.#basketHeroView, this.#basketWrapper.element);
@@ -86,7 +86,7 @@ export default class BasketPresenter extends UiBlocker {
     const previousBasketCatalogDirectorView = this.#basketCatalogDirectorView;
 
     this.#basketCatalogDirectorView = new BasketCatalogDirectorView();
-    this.#basketCatalogDirectorView.setDirectToCatalogButtonClickHandler(this.#directToCatalog);
+    this.#basketCatalogDirectorView.setDirectToCatalogButtonClickHandler(this.#handleDirectToCatalogButtonClick);
 
     if (previousBasketCatalogDirectorView === null) {
       render(this.#basketCatalogDirectorView, this.#basketContentContainerView.element);
@@ -124,9 +124,9 @@ export default class BasketPresenter extends UiBlocker {
       const basketProduct = new BasketProductView({...element, isDeleting: false}, basketProductQuantity);
       this.#basketProductsViews.set(element.id, basketProduct);
 
-      basketProduct.setDeleteProductButtonClickHandler(this.#deleteProduct);
-      basketProduct.setIncreaseQuantityButtonClickHandler(this.#incrementProductQuantity);
-      basketProduct.setDecreaseQuantityButtonClickHandler(this.#decrementProductQuantity);
+      basketProduct.setDeleteProductButtonClickHandler(this.#handleDeleteProductButtonClick);
+      basketProduct.setIncreaseQuantityButtonClickHandler(this.#handleIncreaseQuantityButtonClick);
+      basketProduct.setDecreaseQuantityButtonClickHandler(this.#handleDecreaseQuantityButtonClick);
 
       render(basketProduct, this.#basketProductsContainerView.element);
     });
@@ -136,7 +136,7 @@ export default class BasketPresenter extends UiBlocker {
     const previousBasketClearProductsButtonView = this.#basketClearProductsButtonView;
 
     this.#basketClearProductsButtonView = new BasketClearProductsButtonView({isClearing: false});
-    this.#basketClearProductsButtonView.setBasketClearButtonClickHandler(this.#clearProductsBasket);
+    this.#basketClearProductsButtonView.setBasketClearButtonClickHandler(this.#handleBasketClearButtonClick);
 
     if (previousBasketClearProductsButtonView === null) {
       render(this.#basketClearProductsButtonView, this.#basketContentContainerView.element);
@@ -207,12 +207,12 @@ export default class BasketPresenter extends UiBlocker {
     this.unblock();
   };
 
-  #incrementProductQuantity = (productId) => {
+  #handleIncreaseQuantityButtonClick = (productId) => {
     this.block();
     this.#productsModel.incrementProductQuantity(productId);
   };
 
-  #deleteProduct = (productId) => {
+  #handleDeleteProductButtonClick = (productId) => {
     this.block();
 
     const basketProductData = this.products.find((product) => product.id === productId);
@@ -222,7 +222,7 @@ export default class BasketPresenter extends UiBlocker {
     this.#productsModel.deleteProductFromBasket(productId);
   };
 
-  #decrementProductQuantity = (productId) => {
+  #handleDecreaseQuantityButtonClick = (productId) => {
     const basketProductQuantity = this.basketProducts[productId];
 
     if (basketProductQuantity === 1) {
@@ -233,12 +233,12 @@ export default class BasketPresenter extends UiBlocker {
     this.#productsModel.decrementProductQuantity(productId);
   };
 
-  #directToCatalog = () => {
-    this.#hideBasket();
-    this.#redirectToCatalogFunction();
+  #handleDirectToCatalogButtonClick = () => {
+    this.#handleBasketCloseButtonClick();
+    this.#directToCatalogButtonClickHandler();
   };
 
-  #clearProductsBasket = () => {
+  #handleBasketClearButtonClick = () => {
     if (Object.keys(this.basketProducts).length === 0) {
       return;
     }

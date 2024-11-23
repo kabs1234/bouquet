@@ -106,7 +106,7 @@ export default class ProductsModel extends Observable {
     try {
       const productsId = Object.keys(this.basket.products);
 
-      await Promise.ALL(
+      await Promise.all(
         productsId.map(async (productId) => {
           while (this.basket.products[productId]) {
             await this.decreaseQuantityOrDeleteProduct(productId);

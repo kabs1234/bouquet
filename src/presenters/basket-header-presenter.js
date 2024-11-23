@@ -5,12 +5,12 @@ export default class BasketHeaderPresenter {
   #container = null;
   #productsModel = null;
   #basketHeaderView = null;
-  #showBasket = null;
+  #handleBasketButtonClick = null;
 
-  constructor (container, productsModel, showBasket) {
+  constructor (container, productsModel, basketButtonClickHandler) {
     this.#container = container;
     this.#productsModel = productsModel;
-    this.#showBasket = showBasket;
+    this.#handleBasketButtonClick = basketButtonClickHandler;
 
     this.#productsModel.addObserver(this.#renderBasketHeader);
   }
@@ -23,7 +23,7 @@ export default class BasketHeaderPresenter {
     const previousBasketHeaderView = this.#basketHeaderView;
 
     this.#basketHeaderView = new BasketHeaderView(this.#productsModel.basket);
-    this.#basketHeaderView.setBasketButtonClickHandler(this.#showBasket);
+    this.#basketHeaderView.setBasketButtonClickHandler(this.#handleBasketButtonClick);
 
     if (previousBasketHeaderView === null) {
       render(this.#basketHeaderView, this.#container);

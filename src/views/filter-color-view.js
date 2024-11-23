@@ -15,7 +15,7 @@ const createFilterColorOptionTemplate = (id, color, label, dataFilterColor, acti
       <span class="filter-field-img__img">
         <picture>
           <source type="image/webp" srcset="img/content/filter-${color}.webp, img/content/filter-${color}@2x.webp 2x">
-          <img src="img/content/filter-${color}.png" srcset="img/content/filter-${color}@2x.png 2x" width="130" height="130" alt="${label}" data-filter-color="${dataFilterColor}">
+          <img src="img/content/filter-${color}.png" srcset="img/content/filter-${color}@2x.png 2x" width="130" height="130" alt="${label}">
         </picture>
       </span>
       <span class="filter-field-img__text">${label}</span>

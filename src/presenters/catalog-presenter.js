@@ -34,7 +34,7 @@ export default class CatalogPresenter extends UiBlocker {
 
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
-  #productsView = new Map();
+  #productsViews = new Map();
 
   #isLoading = true;
 
@@ -101,159 +101,6 @@ export default class CatalogPresenter extends UiBlocker {
     remove(previousCatalogSortingsView);
   };
 
-  #setSortingByPriceToIncreasing = () => {
-    this.#activeSorting = SortByPrice.INCREASE;
-    this.#handleViewChange(UpdateType.MAJOR);
-  };
-
-  #setSortingByPriceToDecreasing = () => {
-    this.#activeSorting = SortByPrice.DECREASE;
-    this.#handleViewChange(UpdateType.MAJOR);
-  };
-
-  #handleViewChange = (updateType, productId) => {
-    switch (updateType) {
-      case UpdateType.INITIALIZE:
-        this.#isLoading = false;
-        this.#clearCatalogLoadingMessage();
-        this.initalize();
-        break;
-      case UpdateType.MAJOR:
-        this.#resetCatalogProductsList();
-        break;
-      case UpdateType.LOADING_ERROR:
-        this.#clearCatalogLoadingMessage();
-        this.#renderCatalogErrorLoadingMessage();
-        break;
-      case UpdateType.CHANGING_PRODUCT_ERROR:
-        this.#productsView.get(productId).shake();
-        break;
-    }
-
-    this.unblock();
-  };
-
-  #resetCatalogProductsList = () => {
-    this.#showedProductsAmount = 0;
-    this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
-
-    this.#clearProductsContainerView();
-    this.#clearCatalogButtonsView();
-    this.#clearСatalogProductsEmptyMessageView();
-
-    this.#renderCatalogSortings();
-
-    if (this.products.length === 0) {
-      this.#renderCatalogProductsEmptyMessage();
-      this.#renderCatalogButtons();
-      this.#setHandlers();
-      this.#catalogButtonsView.removeShowMoreButton();
-      return;
-    }
-
-    this.#renderCatalogProductsContainer();
-    this.#renderCatalogProducts();
-
-    if (this.products.length > this.#productsToRender) {
-      this.#renderCatalogButtons();
-      this.#setHandlers();
-    }
-  };
-
-  #clearСatalogProductsEmptyMessageView = () => {
-    remove(this.#catalogProductsEmptyMessageView);
-    this.#catalogProductsEmptyMessageView = null;
-  };
-
-  #clearProductsContainerView = () => {
-    remove(this.#catalogProductsContainerView);
-    this.#catalogProductsContainerView = null;
-  };
-
-  #clearCatalogButtonsView = () => {
-    remove(this.#catalogButtonsView);
-    this.#catalogButtonsView = null;
-  };
-
-  #clearCatalogLoadingMessage = () => {
-    remove(this.#catalogLoadingMessageView);
-    this.#catalogLoadingMessageView = null;
-  };
-
-  #renderCatalogProductsEmptyMessage = () => {
-    const previousCatalogProductsEmptyMessageView = this.#catalogProductsEmptyMessageView;
-
-    this.#catalogProductsEmptyMessageView = new CatalogProductsEmptyMessageView();
-
-    if (previousCatalogProductsEmptyMessageView === null) {
-      render(this.#catalogProductsEmptyMessageView, this.#catalogContainerView.element);
-      return;
-    }
-
-    replace(this.#catalogProductsEmptyMessageView, previousCatalogProductsEmptyMessageView);
-    remove(previousCatalogProductsEmptyMessageView);
-  };
-
-  #renderCatalogProducts = () => {
-    this.products.slice(this.#showedProductsAmount, this.#productsToRender).forEach((product) => {
-      this.#renderCatalogProduct(product);
-    });
-  };
-
-  swipeToCatalogTop = () => {
-    this.#catalogView.element.scrollIntoView();
-  };
-
-  #renderCatalogProduct = (product) => {
-    const catalogProductView = new CatalogProductView(product, this.#productsModel.basket);
-    this.#productsView.set(product.id, catalogProductView);
-
-    catalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
-    catalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
-
-    render(catalogProductView, this.#catalogProductsContainerView.element);
-  };
-
-  #changeFavoriteButtonState = (productId) => {
-    const productsId = Object.keys(this.#productsModel.basket.products);
-    const isFavorite = productsId.includes(productId);
-
-    this.block();
-    if (isFavorite) {
-      this.#productsModel.deleteProductFromBasket(productId);
-    } else {
-      this.#productsModel.addProductToBasket(productId);
-    }
-  };
-
-  #renderMoreProducts = () => {
-    this.#showedProductsAmount += PRODUCTS_RENDERING_AMOUNT_STEP;
-    this.#productsToRender += PRODUCTS_RENDERING_AMOUNT_STEP;
-
-    this.#renderCatalogProducts();
-
-    if (this.products.length < this.#productsToRender) {
-      this.#catalogButtonsView.removeShowMoreButton();
-    }
-  };
-
-  #setHandlers = () => {
-    this.#catalogButtonsView.setShowMoreButtonClickHandler(this.#renderMoreProducts);
-    this.#catalogButtonsView.setToTopButtonClickHandler(this.swipeToCatalogTop);
-  };
-
-  #sortProductsByIncreasingPrice = (products) => products.sort((a, b) => a.price - b.price);
-
-  #sortProductsByDecreasingPrice = (products) => products.sort((a, b) => b.price - a.price);
-
-  #sortProductsByPrice = (products) => {
-    if (this.#activeSorting === SortByPrice.INCREASE) {
-      return this.#sortProductsByIncreasingPrice(products);
-    } else if (this.#activeSorting === SortByPrice.DECREASE) {
-      return this.#sortProductsByDecreasingPrice(products);
-    }
-  };
-
   #renderCatalogProductsContainer = () => {
     const previousCatalogProductsContainerView = this.#catalogProductsContainerView;
 
@@ -284,6 +131,147 @@ export default class CatalogPresenter extends UiBlocker {
     render(this.#catalogLoadingErrorMessageView, this.#catalogContainerView.element);
   };
 
+  #handleViewChange = (updateType, productId) => {
+    switch (updateType) {
+      case UpdateType.INITIALIZE:
+        this.#isLoading = false;
+        this.#catalogLoadingMessageView = this.#destroyView(this.#catalogLoadingMessageView);
+        this.initalize();
+        break;
+      case UpdateType.MAJOR:
+        this.#resetCatalogProductsList();
+        break;
+      case UpdateType.LOADING_ERROR:
+        this.#catalogLoadingMessageView = this.#destroyView(this.#catalogLoadingMessageView);
+        this.#renderCatalogErrorLoadingMessage();
+        break;
+      case UpdateType.CHANGING_PRODUCT_ERROR:
+        this.#productsViews.get(productId).shake();
+        break;
+    }
+
+    this.unblock();
+  };
+
+  #renderCatalogProductsEmptyMessage = () => {
+    const previousCatalogProductsEmptyMessageView = this.#catalogProductsEmptyMessageView;
+
+    this.#catalogProductsEmptyMessageView = new CatalogProductsEmptyMessageView();
+
+    if (previousCatalogProductsEmptyMessageView === null) {
+      render(this.#catalogProductsEmptyMessageView, this.#catalogContainerView.element);
+      return;
+    }
+
+    replace(this.#catalogProductsEmptyMessageView, previousCatalogProductsEmptyMessageView);
+    remove(previousCatalogProductsEmptyMessageView);
+  };
+
+  #renderCatalogProducts = () => {
+    const productsToRender = this.products.slice(this.#showedProductsAmount, this.#productsToRender);
+
+    productsToRender.forEach((product) => {
+      this.#renderCatalogProduct(product);
+    });
+  };
+
+  #renderCatalogProduct = (product) => {
+    const catalogProductView = new CatalogProductView(product, this.#productsModel.basket);
+    this.#productsViews.set(product.id, catalogProductView);
+
+    catalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
+    catalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
+
+    render(catalogProductView, this.#catalogProductsContainerView.element);
+  };
+
+  #renderMoreProducts = () => {
+    this.#showedProductsAmount += PRODUCTS_RENDERING_AMOUNT_STEP;
+    this.#productsToRender += PRODUCTS_RENDERING_AMOUNT_STEP;
+
+    this.#renderCatalogProducts();
+
+    if (this.products.length < this.#productsToRender) {
+      this.#catalogButtonsView.removeShowMoreButton();
+    }
+  };
+
+  #resetCatalogProductsList = () => {
+    this.#showedProductsAmount = 0;
+    this.#productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
+
+    this.#catalogProductsContainerView = this.#destroyView(this.#catalogProductsContainerView);
+    this.#catalogButtonsView = this.#destroyView(this.#catalogButtonsView);
+    this.#catalogProductsEmptyMessageView = this.#destroyView(this.#catalogProductsEmptyMessageView);
+
+    this.#renderCatalogSortings();
+
+    if (this.products.length === 0) {
+      this.#renderCatalogProductsEmptyMessage();
+      this.#renderCatalogButtons();
+      this.#setCatalogButtonsHandlers();
+      this.#catalogButtonsView.removeShowMoreButton();
+      return;
+    }
+
+    this.#renderCatalogProductsContainer();
+    this.#renderCatalogProducts();
+
+    if (this.products.length > this.#productsToRender) {
+      this.#renderCatalogButtons();
+      this.#setCatalogButtonsHandlers();
+    }
+  };
+
+  #changeFavoriteButtonState = (productId) => {
+    const productsId = Object.keys(this.#productsModel.basket.products);
+    const isFavorite = productsId.includes(productId);
+
+    this.block();
+
+    if (isFavorite) {
+      this.#productsModel.deleteProductFromBasket(productId);
+    } else {
+      this.#productsModel.addProductToBasket(productId);
+    }
+  };
+
+  #setCatalogButtonsHandlers = () => {
+    this.#catalogButtonsView.setShowMoreButtonClickHandler(this.#renderMoreProducts);
+    this.#catalogButtonsView.setToTopButtonClickHandler(this.swipeToCatalogTop);
+  };
+
+  #sortProductsByIncreasingPrice = (products) => products.sort((a, b) => a.price - b.price);
+
+  #sortProductsByDecreasingPrice = (products) => products.sort((a, b) => b.price - a.price);
+
+  #setSortingByPriceToIncreasing = () => {
+    this.#activeSorting = SortByPrice.INCREASE;
+    this.#handleViewChange(UpdateType.MAJOR);
+  };
+
+  #setSortingByPriceToDecreasing = () => {
+    this.#activeSorting = SortByPrice.DECREASE;
+    this.#handleViewChange(UpdateType.MAJOR);
+  };
+
+  #sortProductsByPrice = (products) => {
+    if (this.#activeSorting === SortByPrice.INCREASE) {
+      return this.#sortProductsByIncreasingPrice(products);
+    } else if (this.#activeSorting === SortByPrice.DECREASE) {
+      return this.#sortProductsByDecreasingPrice(products);
+    }
+  };
+
+  #destroyView = (view) => {
+    remove(view);
+    return null;
+  };
+
+  swipeToCatalogTop = () => {
+    this.#catalogView.element.scrollIntoView();
+  };
+
   resetActiveSorting = () => {
     this.#activeSorting = SortByPrice.INCREASE;
   };
@@ -303,7 +291,7 @@ export default class CatalogPresenter extends UiBlocker {
 
     if (this.products.length > this.#productsToRender) {
       this.#renderCatalogButtons();
-      this.#setHandlers();
+      this.#setCatalogButtonsHandlers();
     }
   };
 }
