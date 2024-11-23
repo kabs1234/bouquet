@@ -16,6 +16,7 @@ import ProductsServiceApi from './service/products-service-api.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   iosVhFix();
+  initModals();
 });
 
 export const productsServiceApi = new ProductsServiceApi(END_POINT, AUTHORIZATION_TOKEN);
@@ -87,7 +88,6 @@ async function renderExpandedProduct(productId) {
   modal.classList.add('is-loading');
 
   const imageSlider = new ImageSlider('.image-slider');
-  initModals();
 
   modals.open('popup-data-attr');
   const expandedProductPresenter = new ExpandedProductContentPresenter(productId, productsModel, modalContentContainer);
