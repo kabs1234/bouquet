@@ -31,17 +31,17 @@ export default class BasketPresenter extends UiBlocker {
   #basketSumView = null;
   #renderPosition = null;
   #redirectToCatalogFunction = null;
-  #showMain = null;
+  #hideBasket = null;
 
   #basketProductsViews = new Map();
 
-  constructor(container, productsModel, redirectToCatalogFunction, showMain, renderPosition = RenderPosition.BEFOREEND) {
+  constructor(container, productsModel, redirectToCatalogFunction, hideBasket, renderPosition = RenderPosition.BEFOREEND) {
     super(TIME_BEFORE_BLOCK, MIN_BLOCK_TIME);
 
     this.#container = container;
     this.#productsModel = productsModel;
     this.#redirectToCatalogFunction = redirectToCatalogFunction;
-    this.#showMain = showMain;
+    this.#hideBasket = hideBasket;
     this.#renderPosition = renderPosition;
 
     productsModel.addObserver(this.#handleBasketChange);
@@ -49,6 +49,10 @@ export default class BasketPresenter extends UiBlocker {
 
   get basketProducts() {
     return this.#productsModel.basket.products;
+  }
+
+  get products() {
+    return this.#productsModel.products;
   }
 
   #renderBasket = () => {
@@ -63,7 +67,7 @@ export default class BasketPresenter extends UiBlocker {
     const previousBasketHeroView = this.#basketHeroView;
 
     this.#basketHeroView = new BasketHeroView(this.#isLoading);
-    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#removeBasket);
+    this.#basketHeroView.setBasketCloseButtonClickHandler(this.#hideBasket);
 
     if (previousBasketHeroView === null) {
       render(this.#basketHeroView, this.#basketWrapper.element);
@@ -113,7 +117,7 @@ export default class BasketPresenter extends UiBlocker {
     }
 
     const basketProductsId = Object.keys(this.basketProducts);
-    const basketProductsData = this.#productsModel.products.filter((product) => basketProductsId.includes(product.id));
+    const basketProductsData = this.products.filter((product) => basketProductsId.includes(product.id));
 
     basketProductsData.map((element) => {
       const basketProductQuantity = this.basketProducts[element.id];
@@ -126,71 +130,6 @@ export default class BasketPresenter extends UiBlocker {
 
       render(basketProduct, this.#basketProductsContainerView.element);
     });
-  };
-
-  #incrementProductQuantity = (productId) => {
-    this.block();
-    this.#productsModel.incrementProductQuantity(productId);
-  };
-
-  #deleteProduct = (productId) => {
-    this.block();
-
-    const basketProductData = this.#productsModel.products.find((product) => product.id === productId);
-    const basketProductView = this.#basketProductsViews.get(productId);
-
-    basketProductView.updateElement({...basketProductData, isDeleting: true});
-    this.#productsModel.deleteProductFromBasket(productId);
-  };
-
-  #decrementProductQuantity = (productId) => {
-    const basketProductQuantity = this.basketProducts[productId];
-
-    if (basketProductQuantity === 1) {
-      return;
-    }
-
-    this.block();
-    this.#productsModel.decrementProductQuantity(productId);
-  };
-
-  #handleBasketChange = (updateType, productId) => {
-    switch (updateType) {
-      case UpdateType.Initalize:
-        this.#isLoading = false;
-        remove(this.#basketLoadingMessageView);
-        this.initalize();
-
-        if (Object.keys(this.basketProducts).length === 0) {
-          this.#renderBasketEmptyMessage();
-        }
-
-        break;
-      case UpdateType.Major:
-        this.#renderBasketProductsContainerView();
-
-        if (Object.keys(this.basketProducts).length === 0) {
-          this.#renderBasketEmptyMessage();
-        }
-
-        this.#renderBasketProducts();
-        this.#renderBasketSum();
-        this.#basketClearProductsButtonView.updateElement({isClearing: false});
-        break;
-      case UpdateType.ChangingProductError: {
-        const basketProductView = this.#basketProductsViews.get(productId);
-        const basketProductData = this.#productsModel.products.find((product) => product.id === productId);
-        basketProductView.updateElement({...basketProductData, isDeleting: false});
-        basketProductView.shake();
-        break;
-      }
-      case UpdateType.ClearingBasketError:
-        this.#basketClearProductsButtonView.updateElement({isClearing: false});
-        this.#basketClearProductsButtonView.shake();
-        break;
-    }
-
-    this.unblock();
   };
 
   #renderBasketClearProductsButton = () => {
@@ -229,6 +168,86 @@ export default class BasketPresenter extends UiBlocker {
     render(this.#basketEmptyMessageView, this.#basketProductsContainerView.element);
   };
 
+  #handleBasketChange = (updateType, productId) => {
+    switch (updateType) {
+      case UpdateType.INITIALIZE:
+        this.#isLoading = false;
+        remove(this.#basketLoadingMessageView);
+        this.initalize();
+
+        if (Object.keys(this.basketProducts).length === 0) {
+          this.#renderBasketEmptyMessage();
+        }
+
+        break;
+      case UpdateType.MAJOR:
+        this.#renderBasketProductsContainerView();
+
+        if (Object.keys(this.basketProducts).length === 0) {
+          this.#renderBasketEmptyMessage();
+        }
+
+        this.#renderBasketProducts();
+        this.#renderBasketSum();
+        this.#basketClearProductsButtonView.updateElement({isClearing: false});
+        break;
+      case UpdateType.CHANGING_PRODUCT_ERROR: {
+        const basketProductView = this.#basketProductsViews.get(productId);
+        const basketProductData = this.products.find((product) => product.id === productId);
+        basketProductView.updateElement({...basketProductData, isDeleting: false});
+        basketProductView.shake();
+        break;
+      }
+      case UpdateType.CLEARING_BASKET_ERROR:
+        this.#basketClearProductsButtonView.updateElement({isClearing: false});
+        this.#basketClearProductsButtonView.shake();
+        break;
+    }
+
+    this.unblock();
+  };
+
+  #incrementProductQuantity = (productId) => {
+    this.block();
+    this.#productsModel.incrementProductQuantity(productId);
+  };
+
+  #deleteProduct = (productId) => {
+    this.block();
+
+    const basketProductData = this.products.find((product) => product.id === productId);
+    const basketProductView = this.#basketProductsViews.get(productId);
+
+    basketProductView.updateElement({...basketProductData, isDeleting: true});
+    this.#productsModel.deleteProductFromBasket(productId);
+  };
+
+  #decrementProductQuantity = (productId) => {
+    const basketProductQuantity = this.basketProducts[productId];
+
+    if (basketProductQuantity === 1) {
+      return;
+    }
+
+    this.block();
+    this.#productsModel.decrementProductQuantity(productId);
+  };
+
+  #directToCatalog = () => {
+    this.#hideBasket();
+    this.#redirectToCatalogFunction();
+  };
+
+  #clearProductsBasket = () => {
+    if (Object.keys(this.basketProducts).length === 0) {
+      return;
+    }
+
+    this.block();
+    this.#basketClearProductsButtonView.updateElement({isClearing: true});
+    this.#productsModel.clearBasket();
+  };
+
   initalize = () => {
     this.#renderBasket();
     this.#renderBasketWrapper();
@@ -249,24 +268,4 @@ export default class BasketPresenter extends UiBlocker {
     this.#renderBasketSum();
   };
 
-  #directToCatalog = () => {
-    this.#removeBasket();
-    this.#redirectToCatalogFunction();
-  };
-
-  #clearProductsBasket = () => {
-    if (Object.keys(this.basketProducts).length === 0) {
-      return;
-    }
-
-    this.block();
-
-    this.#basketClearProductsButtonView.updateElement({isClearing: true});
-
-    this.#productsModel.clearBasket();
-  };
-
-  #removeBasket = () => {
-    this.#showMain();
-  };
 }

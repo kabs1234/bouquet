@@ -30,7 +30,7 @@ export default class CatalogPresenter extends UiBlocker {
   #catalogLoadingMessageView = new CatalogLoadingMessageView();
   #catalogLoadingErrorMessageView = new CatalogLoadingErrorMessageView();
 
-  #activeSorting = SortByPrice.Increase;
+  #activeSorting = SortByPrice.INCREASE;
 
   #showedProductsAmount = 0;
   #productsToRender = this.#showedProductsAmount + PRODUCTS_RENDERING_AMOUNT_STEP;
@@ -55,15 +55,15 @@ export default class CatalogPresenter extends UiBlocker {
 
     productsCopy = this.#sortProductsByPrice(productsCopy);
 
-    if (this.#filtersModel.filterReason === FilterReason.All && this.#filtersModel.filterColors[0] === FilterColor.All) {
+    if (this.#filtersModel.filterReason === FilterReason.ALL && this.#filtersModel.filterColors[0] === FilterColor.ALL) {
       return productsCopy;
     }
 
-    if (this.#filtersModel.filterReason === FilterReason.All) {
+    if (this.#filtersModel.filterReason === FilterReason.ALL) {
       return productsCopy.filter((product) => this.#filtersModel.filterColors.includes(product.color));
     }
 
-    if (this.#filtersModel.filterColors[0] === FilterColor.All) {
+    if (this.#filtersModel.filterColors[0] === FilterColor.ALL) {
       return productsCopy.filter((product) => product.type === this.#filtersModel.filterReason);
     }
 
@@ -102,43 +102,30 @@ export default class CatalogPresenter extends UiBlocker {
   };
 
   #setSortingByPriceToIncreasing = () => {
-    this.#activeSorting = SortByPrice.Increase;
-    this.#handleViewChange(UpdateType.Major);
+    this.#activeSorting = SortByPrice.INCREASE;
+    this.#handleViewChange(UpdateType.MAJOR);
   };
 
   #setSortingByPriceToDecreasing = () => {
-    this.#activeSorting = SortByPrice.Decrease;
-    this.#handleViewChange(UpdateType.Major);
+    this.#activeSorting = SortByPrice.DECREASE;
+    this.#handleViewChange(UpdateType.MAJOR);
   };
 
   #handleViewChange = (updateType, productId) => {
     switch (updateType) {
-      case UpdateType.Initalize:
+      case UpdateType.INITIALIZE:
         this.#isLoading = false;
         this.#clearCatalogLoadingMessage();
         this.initalize();
         break;
-      case UpdateType.Patch: {
-        const newCatalogProduct = this.products.find((product) => product.id === productId);
-        const newCatalogProductView = new CatalogProductView(newCatalogProduct, this.#productsModel.basket);
-
-        newCatalogProductView.setProductClickHandler(this.#renderExpandedProductFunction);
-        newCatalogProductView.setFavoriteButtonClickHandler(this.#changeFavoriteButtonState);
-
-        replace(newCatalogProductView, this.#productsView.get(productId));
-
-        this.#productsView.delete(productId);
-        this.#productsView.set(productId, newCatalogProductView);
-        break;
-      }
-      case UpdateType.Major:
+      case UpdateType.MAJOR:
         this.#resetCatalogProductsList();
         break;
-      case UpdateType.LoadingError:
+      case UpdateType.LOADING_ERROR:
         this.#clearCatalogLoadingMessage();
         this.#renderCatalogErrorLoadingMessage();
         break;
-      case UpdateType.ChangingProductError:
+      case UpdateType.CHANGING_PRODUCT_ERROR:
         this.#productsView.get(productId).shake();
         break;
     }
@@ -260,9 +247,9 @@ export default class CatalogPresenter extends UiBlocker {
   #sortProductsByDecreasingPrice = (products) => products.sort((a, b) => b.price - a.price);
 
   #sortProductsByPrice = (products) => {
-    if (this.#activeSorting === SortByPrice.Increase) {
+    if (this.#activeSorting === SortByPrice.INCREASE) {
       return this.#sortProductsByIncreasingPrice(products);
-    } else if (this.#activeSorting === SortByPrice.Decrease) {
+    } else if (this.#activeSorting === SortByPrice.DECREASE) {
       return this.#sortProductsByDecreasingPrice(products);
     }
   };
@@ -298,7 +285,7 @@ export default class CatalogPresenter extends UiBlocker {
   };
 
   resetActiveSorting = () => {
-    this.#activeSorting = SortByPrice.Increase;
+    this.#activeSorting = SortByPrice.INCREASE;
   };
 
   initalize = () => {

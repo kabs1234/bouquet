@@ -7,19 +7,19 @@ export default class ProductsServiceApi extends ApiService {
   }
 
   getProductsList = async () => {
-    const request = await this._load({url: 'flowers-shop/products', method: Method.Get});
+    const request = await this._load({url: 'flowers-shop/products', method: Method.GET});
 
     return await ApiService.parseResponse(request);
   };
 
   getBasket = async () => {
-    const request = await this._load({url: 'flowers-shop/cart', method: Method.Get});
+    const request = await this._load({url: 'flowers-shop/cart', method: Method.GET});
 
     return await ApiService.parseResponse(request);
   };
 
   getExpandedProductInformation = async (productId) => {
-    const request = await this._load({url: `flowers-shop/products/${productId}`, method: Method.Get});
+    const request = await this._load({url: `flowers-shop/products/${productId}`, method: Method.GET});
 
     return await ApiService.parseResponse(request);
   };
@@ -27,7 +27,7 @@ export default class ProductsServiceApi extends ApiService {
   addOrIncrementProduct = async (productId) => {
     const request = await this._load({
       url: `flowers-shop/products/${productId}`,
-      method: Method.Put,
+      method: Method.PUT,
     });
 
     return await ApiService.parseResponse(request);
@@ -35,6 +35,6 @@ export default class ProductsServiceApi extends ApiService {
 
   deleteOrDecrementProduct = async (productId) => await this._load({
     url: `flowers-shop/products/${productId}`,
-    method: Method.Delete,
+    method: Method.DELETE,
   });
 }

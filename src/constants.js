@@ -5,52 +5,46 @@ export const TIME_BEFORE_BLOCK = 0;
 export const MIN_BLOCK_TIME = 300;
 
 export const FilterReason = {
-  All: 'all',
-  Birthday: 'birthdayboy',
-  Bride: 'bridge',
-  Mother: 'motherday',
-  Colleague: 'colleagues',
-  Darling: 'forlove',
+  ALL: 'all',
+  BIRTHDAY: 'birthdayboy',
+  BRIDE: 'bridge',
+  MOTHER: 'motherday',
+  COLLEAGUE: 'colleagues',
+  DARLING: 'forlove',
 };
 
 export const FilterColor = {
-  All: 'all',
-  Red: 'red',
-  White: 'white',
-  Violet: 'violet',
-  Yellow: 'yellow',
-  Pink: 'pink',
-};
-
-export const FilterType = {
-  Reason: 'Reason',
-  Color: 'Color',
+  ALL: 'all',
+  RED: 'red',
+  WHITE: 'white',
+  VIOLET: 'violet',
+  YELLOW: 'yellow',
+  PINK: 'pink',
 };
 
 export const SortByPrice = {
-  Increase: 'increase',
-  Decrease: 'decrease',
+  INCREASE: 'increase',
+  DECREASE: 'decrease',
 };
 
 export const ProductType = {
-  BirthdayBoy: 'Имениннику',
-  ForLove: 'Любимой',
-  Bridge: 'Невесте',
-  Colleagues: 'Коллеге',
-  MotherDay: 'Маме',
+  BIRTHDAYBOY: 'Имениннику',
+  FORLOVE: 'Любимой',
+  BRIDGE: 'Невесте',
+  COLLEAGUES: 'Коллеге',
+  MOTHERDAY: 'Маме',
 };
 
 export const Method = {
-  Get: 'GET',
-  Put: 'PUT',
-  Delete: 'DELETE',
+  GET: 'GET',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
 };
 
 export const UpdateType = {
-  Initalize: 'Initalize',
-  Patch: 'Patch',
-  Major: 'Major',
-  LoadingError: 'Loading error',
-  ChangingProductError: 'Changing product Error',
-  ClearingBasketError: 'Clearing basket error'
+  INITIALIZE: 'Initialize',
+  MAJOR: 'Major',
+  LOADING_ERROR: 'Loading error',
+  CHANGING_PRODUCT_ERROR: 'Changing product error',
+  CLEARING_BASKET_ERROR: 'Clearing basket error'
 };

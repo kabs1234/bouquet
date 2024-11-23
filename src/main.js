@@ -12,7 +12,7 @@ import ExpandedProductContentPresenter from './presenters/expanded-product-conte
 import { ImageSlider } from './utils/image-slider.js';
 import { initModals, modals } from './modals/init-modals.js';
 import { RenderPosition } from './framework/render.js';
-import { AUTHORIZATION_TOKEN, END_POINT, FilterColor, FilterReason, FilterType } from './constants.js';
+import { AUTHORIZATION_TOKEN, END_POINT, FilterColor, FilterReason, UpdateType } from './constants.js';
 import ProductsServiceApi from './service/products-service-api.js';
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -34,7 +34,7 @@ const catalogPresenter = new CatalogPresenter(main, productsModel, filtersModel,
 const infoPresenter = new InfoPresenter(main);
 const filterPresenter = new FiltersPresenter(main, filtersModel);
 const basketHeaderPresenter = new BasketHeaderPresenter(headerWrapper, productsModel, showBasket);
-const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, showMain, RenderPosition.BEFOREBEGIN);
+const basketPresenter = new BasketPresenter(footer, productsModel, redirectToCatalog, hideBasket, RenderPosition.BEFOREBEGIN);
 
 basketHeader.remove();
 basketHeaderPresenter.initalize();
@@ -48,7 +48,7 @@ const basket = document.querySelector('.popup-deferred');
 
 basket.style = 'display: none;';
 
-function showMain() {
+function hideBasket() {
   basket.style = 'display: none;';
   main.style = '';
 }
@@ -61,8 +61,8 @@ function showBasket() {
 function redirectToCatalog() {
   catalogPresenter.swipeToCatalogTop();
   catalogPresenter.resetActiveSorting();
-  filtersModel.setfilterReason(FilterType.Reason, FilterReason.All);
-  filtersModel.setFilterColor(FilterType.Color, FilterColor.All);
+  filtersModel.setfilterReason(UpdateType.MAJOR, FilterReason.ALL);
+  filtersModel.setFilterColor(UpdateType.MAJOR, FilterColor.ALL);
 }
 
 export const closeCallback = () => {
@@ -87,7 +87,7 @@ async function renderExpandedProduct(productId) {
   modal.classList.add('is-loading');
 
   const imageSlider = new ImageSlider('.image-slider');
-  initModals(closeCallback);
+  initModals();
 
   modals.open('popup-data-attr');
   const expandedProductPresenter = new ExpandedProductContentPresenter(productId, productsModel, modalContentContainer);

@@ -25,12 +25,12 @@ const createFilterColorOptionTemplate = (id, color, label, dataFilterColor, acti
 
 const createFilterColorTemplate = (activeFilterColors) => {
   const filterOptions = [
-    { id: 0, color: 'all', label: 'все цвета', dataFilterColor: FilterColor.All },
-    { id: 1, color: 'red', label: 'красный', dataFilterColor: FilterColor.Red },
-    { id: 2, color: 'white', label: 'белый', dataFilterColor: FilterColor.White },
-    { id: 3, color: 'lilac', label: 'сиреневый', dataFilterColor: FilterColor.Violet },
-    { id: 4, color: 'yellow', label: 'жёлтый', dataFilterColor: FilterColor.Yellow },
-    { id: 5, color: 'pink', label: 'розовый', dataFilterColor: FilterColor.Pink }
+    { id: 0, color: 'all', label: 'все цвета', dataFilterColor: FilterColor.ALL },
+    { id: 1, color: 'red', label: 'красный', dataFilterColor: FilterColor.RED },
+    { id: 2, color: 'white', label: 'белый', dataFilterColor: FilterColor.WHITE },
+    { id: 3, color: 'lilac', label: 'сиреневый', dataFilterColor: FilterColor.VIOLET },
+    { id: 4, color: 'yellow', label: 'жёлтый', dataFilterColor: FilterColor.YELLOW },
+    { id: 5, color: 'pink', label: 'розовый', dataFilterColor: FilterColor.PINK }
   ];
 
   const filterOptionsMarkup = filterOptions

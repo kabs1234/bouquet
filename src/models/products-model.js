@@ -36,9 +36,9 @@ export default class ProductsModel extends Observable {
 
       this.#basket.products[productId] = 1;
 
-      this._notify(UpdateType.Major);
+      this._notify(UpdateType.MAJOR);
     } catch (err) {
-      this._notify(UpdateType.ChangingProductError, productId);
+      this._notify(UpdateType.CHANGING_PRODUCT_ERROR, productId);
       throw new Error(`An error occurred adding product to basket: ${err.message}`);
     }
   };
@@ -55,9 +55,9 @@ export default class ProductsModel extends Observable {
 
       this.basket.products[productId] += 1;
 
-      this._notify(UpdateType.Major);
+      this._notify(UpdateType.MAJOR);
     } catch (err) {
-      this._notify(UpdateType.ChangingProductError, productId);
+      this._notify(UpdateType.CHANGING_PRODUCT_ERROR, productId);
       throw new Error(`An error occurred incrementing product quantity: ${err.message, err.stack}`);
     }
   };
@@ -68,9 +68,9 @@ export default class ProductsModel extends Observable {
         await this.decreaseQuantityOrDeleteProduct(productId);
       }
 
-      this._notify(UpdateType.Major);
+      this._notify(UpdateType.MAJOR);
     } catch (err) {
-      this._notify(UpdateType.ChangingProductError, productId);
+      this._notify(UpdateType.CHANGING_PRODUCT_ERROR, productId);
       throw new Error(`An error occurred deleting product from basket: ${err.message}`);
     }
   };
@@ -95,9 +95,9 @@ export default class ProductsModel extends Observable {
     try {
       await this.decreaseQuantityOrDeleteProduct(productId);
 
-      this._notify(UpdateType.Major);
+      this._notify(UpdateType.MAJOR);
     } catch (err) {
-      this._notify(UpdateType.ChangingProductError, productId);
+      this._notify(UpdateType.CHANGING_PRODUCT_ERROR, productId);
       throw new Error(`An error occurred decrementing product quantity: ${err.message}`);
     }
   };
@@ -106,7 +106,7 @@ export default class ProductsModel extends Observable {
     try {
       const productsId = Object.keys(this.basket.products);
 
-      await Promise.all(
+      await Promise.ALL(
         productsId.map(async (productId) => {
           while (this.basket.products[productId]) {
             await this.decreaseQuantityOrDeleteProduct(productId);
@@ -114,9 +114,9 @@ export default class ProductsModel extends Observable {
         })
       );
 
-      this._notify(UpdateType.Major);
+      this._notify(UpdateType.MAJOR);
     } catch (err) {
-      this._notify(UpdateType.ClearingBasketError);
+      this._notify(UpdateType.CLEARING_BASKET_ERROR);
       throw new Error('An error occurred clearing basket');
     }
   };
@@ -142,9 +142,9 @@ export default class ProductsModel extends Observable {
       this.#productsList = [...productsListRequest];
       this.#basket = Object.keys(basketRequest).length !== 0 ? {...basketRequest} : this.#basket;
 
-      this._notify(UpdateType.Initalize);
+      this._notify(UpdateType.INITIALIZE);
     } catch (err) {
-      this._notify(UpdateType.LoadingError);
+      this._notify(UpdateType.LOADING_ERROR);
       throw new Error(`An error occurred in initalizing data: ${err.message, err.stack}`);
     }
   };

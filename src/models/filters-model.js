@@ -2,8 +2,8 @@ import { FilterColor, FilterReason } from '../constants.js';
 import Observable from '../framework/observable.js';
 
 export default class FiltersModel extends Observable {
-  #filterReason = FilterReason.All;
-  #filterColors = [FilterColor.All];
+  #filterReason = FilterReason.ALL;
+  #filterColors = [FilterColor.ALL];
 
   get filterReason() {
     return this.#filterReason;
@@ -19,13 +19,13 @@ export default class FiltersModel extends Observable {
   };
 
   setFilterColor = (updateType, newFilterColor) => {
-    if (newFilterColor === FilterColor.All) {
-      this.#filterColors = [FilterColor.All];
+    if (newFilterColor === FilterColor.ALL) {
+      this.#filterColors = [FilterColor.ALL];
       this._notify(updateType);
       return;
     }
 
-    const isAllFilterActive = this.filterColors.length === 1 && this.filterColors[0] === FilterColor.All;
+    const isAllFilterActive = this.filterColors.length === 1 && this.filterColors[0] === FilterColor.ALL;
 
     if (isAllFilterActive) {
       this.#filterColors = [newFilterColor];

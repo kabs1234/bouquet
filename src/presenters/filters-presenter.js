@@ -60,11 +60,11 @@ export default class FiltersPresenter {
   };
 
   #setFilterReason = (newFilterReason) => {
-    this.#filtersModel.setfilterReason(UpdateType.Major, newFilterReason);
+    this.#filtersModel.setfilterReason(UpdateType.MAJOR, newFilterReason);
   };
 
   #setFilterColor = (newFilterColor) => {
-    this.#filtersModel.setFilterColor(UpdateType.Major, newFilterColor);
+    this.#filtersModel.setFilterColor(UpdateType.MAJOR, newFilterColor);
   };
 
   initalize = () => {

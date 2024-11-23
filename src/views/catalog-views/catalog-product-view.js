@@ -15,15 +15,15 @@ const createFavoriteButton = (productId) => (`
 const getProductType = (productType) => {
   switch (productType) {
     case 'birthdayboy':
-      return ProductType.BirthdayBoy;
+      return ProductType.BIRTHDAYBOY;
     case 'forlove':
-      return ProductType.ForLove;
+      return ProductType.FORLOVE;
     case 'bridge':
-      return ProductType.Bridge;
+      return ProductType.BRIDGE;
     case 'colleagues':
-      return ProductType.Colleagues;
+      return ProductType.COLLEAGUES;
     case 'motherday':
-      return ProductType.MotherDay;
+      return ProductType.MOTHERDAY;
   }
 };
 

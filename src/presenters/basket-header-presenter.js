@@ -23,7 +23,7 @@ export default class BasketHeaderPresenter {
     const previousBasketHeaderView = this.#basketHeaderView;
 
     this.#basketHeaderView = new BasketHeaderView(this.#productsModel.basket);
-    this.#basketHeaderView.setBasketButtonClickHandler(this.#renderBasket);
+    this.#basketHeaderView.setBasketButtonClickHandler(this.#showBasket);
 
     if (previousBasketHeaderView === null) {
       render(this.#basketHeaderView, this.#container);
@@ -36,9 +36,5 @@ export default class BasketHeaderPresenter {
 
   initalize = () => {
     this.#renderBasketHeader();
-  };
-
-  #renderBasket = () => {
-    this.#showBasket();
   };
 }

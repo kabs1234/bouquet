@@ -18,12 +18,12 @@ const createFilterOptionTemplate = (id, reason, label, dataFilterReason, activeF
 
 const createFilterReasonTemplate = (activeFilterReason) => {
   const filterOptions = [
-    { id: 0, reason: 'all', label: 'Для всех', dataFilterReason: FilterReason.All },
-    { id: 1, reason: 'birthday', label: 'Имениннику', dataFilterReason: FilterReason.Birthday },
-    { id: 2, reason: 'bride', label: 'Невесте', dataFilterReason: FilterReason.Bride },
-    { id: 3, reason: 'mother', label: 'Маме', dataFilterReason: FilterReason.Mother },
-    { id: 4, reason: 'colleague', label: 'Коллеге', dataFilterReason: FilterReason.Colleague },
-    { id: 5, reason: 'darling', label: 'Любимой', dataFilterReason: FilterReason.Darling }
+    { id: 0, reason: 'all', label: 'Для всех', dataFilterReason: FilterReason.ALL },
+    { id: 1, reason: 'birthday', label: 'Имениннику', dataFilterReason: FilterReason.BIRTHDAY },
+    { id: 2, reason: 'bride', label: 'Невесте', dataFilterReason: FilterReason.BRIDE },
+    { id: 3, reason: 'mother', label: 'Маме', dataFilterReason: FilterReason.MOTHER },
+    { id: 4, reason: 'colleague', label: 'Коллеге', dataFilterReason: FilterReason.COLLEAGUE },
+    { id: 5, reason: 'darling', label: 'Любимой', dataFilterReason: FilterReason.DARLING }
   ];
 
   const filterOptionsMarkup = filterOptions
