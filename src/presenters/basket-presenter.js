@@ -12,6 +12,7 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { MIN_BLOCK_TIME, TIME_BEFORE_BLOCK, UpdateType } from '../constants';
 import BasketEmptyMessageView from '../views/basket-views/basket-empty-message-view';
 import BasketLoadingMessageView from '../views/basket-views/basket-loading-message-view';
+import BasketLoadingErrorMessageView from '../views/basket-views/basket-loading-error-message-view';
 
 export default class BasketPresenter extends UiBlocker {
   #productsModel = null;
@@ -23,6 +24,7 @@ export default class BasketPresenter extends UiBlocker {
   #basketContentContainerView = new BasketContentContainerView();
   #basketEmptyMessageView = new BasketEmptyMessageView();
   #basketLoadingMessageView = new BasketLoadingMessageView();
+  #basketLoadingErrorMessageView = new BasketLoadingErrorMessageView();
 
   #basketHeroView = null;
   #basketCatalogDirectorView = null;
@@ -168,6 +170,10 @@ export default class BasketPresenter extends UiBlocker {
     render(this.#basketEmptyMessageView, this.#basketProductsContainerView.element);
   };
 
+  #renderBasketLoadingErrorMessage = () => {
+    render(this.#basketLoadingErrorMessageView, this.#basketProductsContainerView.element);
+  };
+
   #handleBasketChange = (updateType, productId) => {
     switch (updateType) {
       case UpdateType.INITIALIZE:
@@ -190,6 +196,12 @@ export default class BasketPresenter extends UiBlocker {
         this.#renderBasketProducts();
         this.#renderBasketSum();
         this.#basketClearProductsButtonView.updateElement({isClearing: false});
+        break;
+      case UpdateType.LOADING_ERROR:
+        this.#isLoading = false;
+        remove(this.#basketLoadingMessageView);
+        this.#renderBasketHero();
+        this.#renderBasketLoadingErrorMessage();
         break;
       case UpdateType.CHANGING_PRODUCT_ERROR: {
         const basketProductView = this.#basketProductsViews.get(productId);
