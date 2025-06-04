@@ -7,6 +7,7 @@ module.exports = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "build"),
     clean: true,
+    publicPath: '/bouquet/'
   },
   devtool: "source-map",
   plugins: [

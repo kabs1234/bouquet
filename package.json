@@ -1,4 +1,5 @@
 {
+  "homepage": "https://kabs1234.github.io/bouquet",
   "name": "bouquet",
   "version": "1.0.0",
   "private": true,
@@ -6,7 +7,9 @@
   "scripts": {
     "lint": "eslint src/",
     "build": "webpack --mode production",
-    "start": "webpack serve --mode development --open"
+    "start": "webpack serve --mode development --open",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": [
     "last 2 versions",
@@ -23,6 +26,7 @@
     "css-loader": "6.7.2",
     "eslint": "8.28.0",
     "eslint-config-htmlacademy": "8.0.0",
+    "gh-pages": "^6.3.0",
     "style-loader": "3.3.1",
     "webpack": "5.75.0",
     "webpack-cli": "5.0.0",
